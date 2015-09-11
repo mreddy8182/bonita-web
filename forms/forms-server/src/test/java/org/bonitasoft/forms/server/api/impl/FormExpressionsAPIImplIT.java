@@ -5,19 +5,16 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2.0 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.bonitasoft.forms.server.api.impl;
 
 import static org.bonitasoft.test.toolkit.bpm.ProcessVariable.aStringVariable;
-import static org.bonitasoft.test.toolkit.bpm.TestProcessFactory.createProcessWithVariables;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -33,7 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.bonitasoft.console.common.server.utils.TenantFolder;
+import org.bonitasoft.console.common.server.utils.BonitaHomeFolderAccessor;
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.actor.ActorCriterion;
@@ -60,6 +57,8 @@ import org.bonitasoft.forms.server.api.FormAPIFactory;
 import org.bonitasoft.forms.server.api.IFormExpressionsAPI;
 import org.bonitasoft.test.toolkit.bpm.ProcessVariable;
 import org.bonitasoft.test.toolkit.bpm.TestHumanTask;
+import org.bonitasoft.test.toolkit.bpm.TestProcess;
+import org.bonitasoft.test.toolkit.bpm.TestProcessFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -69,7 +68,6 @@ import org.junit.Test;
  * Unit test for the implementation of the form expressions API
  *
  * @author Anthony Birembaut
- *
  */
 public class FormExpressionsAPIImplIT extends FormsTestCase {
 
@@ -91,14 +89,13 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
 
     @Before
     public void deployProcess() throws Exception {
-        super.setUp();
         final ProcessDefinitionBuilder processBuilder = new ProcessDefinitionBuilder().createNewInstance("firstProcess", "1.0");
         final ExpressionBuilder expressionBuilder = new ExpressionBuilder();
         processBuilder.addData(
                 "application",
                 String.class.getName(),
                 expressionBuilder.createNewInstance("word").setContent("Word").setExpressionType(ExpressionType.TYPE_CONSTANT)
-                .setReturnType(String.class.getName()).done());
+                        .setReturnType(String.class.getName()).done());
         processBuilder.addData(
                 "dataWithNoInitialValue",
                 String.class.getName(), null);
@@ -109,7 +106,9 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
 
         final DesignProcessDefinition designProcessDefinition = processBuilder.done();
         final BusinessArchiveBuilder businessArchiveBuilder = new BusinessArchiveBuilder().createNewBusinessArchive();
-        final BusinessArchive businessArchive = businessArchiveBuilder.setProcessDefinition(designProcessDefinition).done();
+        final BusinessArchive businessArchive = businessArchiveBuilder
+                .setFormMappings(TestProcess.createDefaultProcessFormMapping(designProcessDefinition))
+                .setProcessDefinition(designProcessDefinition).done();
         processAPI = TenantAPIAccessor.getProcessAPI(getSession());
         processDefinition = processAPI.deploy(businessArchive);
 
@@ -117,7 +116,6 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
         processAPI.addUserToActor(processActor.getId(), getInitiator().getUser().getId());
 
         processAPI.enableProcess(processDefinition.getId());
-
 
         processAPI = TenantAPIAccessor.getProcessAPI(getSession());
         processInstance = processAPI.startProcess(processDefinition.getId());
@@ -128,7 +126,6 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
         expression = new Expression(null, "application + \"-\" + field_application", ExpressionType.TYPE_READ_ONLY_SCRIPT.name(), String.class.getName(),
                 "GROOVY", dependencies);
 
-
         formExpressionsAPI = FormAPIFactory.getFormExpressionsAPI();
 
     }
@@ -138,11 +135,13 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
     @Test
     public void evaluate_expression_on_finished_activity_should_TODO() throws Exception {
         final ProcessVariable aVariable = aStringVariable("application", "Word");
-        final TestHumanTask executedTask = createProcessWithVariables("aProcess", aVariable).addActor(getInitiator()).enable()
+        final TestProcess testProcess = TestProcessFactory.createProcessWithVariables("aProcess1", aVariable);
+        final TestHumanTask executedTask = testProcess.addActor(getInitiator()).enable()
                 .startCase().getNextHumanTask().assignTo(getInitiator()).execute();
         final Map<String, FormFieldValue> fieldValues = createFieldValueForVariable(aVariable, "Excel");
 
-        final Serializable evaluationResult = formExpressionsAPI.evaluateActivityExpression(getSession(), executedTask.getId(), expression, fieldValues, Locale.ENGLISH, false);
+        final Serializable evaluationResult = formExpressionsAPI.evaluateActivityExpression(getSession(), executedTask.getId(), expression, fieldValues,
+                Locale.ENGLISH, false);
 
         assertEquals("Word-Excel", evaluationResult.toString());
     }
@@ -152,11 +151,13 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
     @Test
     public void evaluate_expression_on_activity_should_TODO() throws Exception {
         final ProcessVariable aVariable = aStringVariable("application", "Word");
-        final TestHumanTask notExecutedTask = createProcessWithVariables("aProcess", aVariable).addActor(getInitiator()).enable()
+        final TestProcess testProcess = TestProcessFactory.createProcessWithVariables("aProcess2", aVariable);
+        final TestHumanTask notExecutedTask = testProcess.addActor(getInitiator()).enable()
                 .startCase().getNextHumanTask().assignTo(getInitiator());
         final Map<String, FormFieldValue> fieldValues = createFieldValueForVariable(aVariable, "Excel");
 
-        final Serializable evaluationResult = formExpressionsAPI.evaluateActivityExpression(getSession(), notExecutedTask.getId(), expression, fieldValues, Locale.ENGLISH, false);
+        final Serializable evaluationResult = formExpressionsAPI.evaluateActivityExpression(getSession(), notExecutedTask.getId(), expression, fieldValues,
+                Locale.ENGLISH, false);
 
         assertEquals("Word-Excel", evaluationResult.toString());
     }
@@ -187,7 +188,8 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
         final Map<String, FormFieldValue> fieldValues = new HashMap<String, FormFieldValue>();
         fieldValues.put("application", new FormFieldValue("Excel", String.class.getName()));
         final Expression expression = new Expression(null, "field_application", ExpressionType.TYPE_INPUT.name(), String.class.getName(), null, null);
-        final Serializable result = formExpressionsAPI.evaluateProcessExpression(getSession(), processDefinition.getId(), expression, fieldValues, Locale.ENGLISH);
+        final Serializable result = formExpressionsAPI.evaluateProcessExpression(getSession(), processDefinition.getId(), expression, fieldValues,
+                Locale.ENGLISH);
         Assert.assertEquals("Excel", result.toString());
     }
 
@@ -203,7 +205,8 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
 
         final Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("transientData", "transientDataValue");
-        final Serializable result = formExpressionsAPI.evaluateProcessInitialExpression(getSession(), processDefinition.getId(), expressionToEvaluate, Locale.ENGLISH,
+        final Serializable result = formExpressionsAPI.evaluateProcessInitialExpression(getSession(), processDefinition.getId(), expressionToEvaluate,
+                Locale.ENGLISH,
                 context);
         Assert.assertEquals("transientDataValue", result.toString());
     }
@@ -223,7 +226,8 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
         context.put("transientData", "transientDataValue");
         final List<Expression> expressionsToEvaluate = new ArrayList<Expression>();
         expressionsToEvaluate.add(expressionToEvaluate);
-        final Map<String, Serializable> result = formExpressionsAPI.evaluateProcessInitialExpressions(getSession(), processDefinition.getId(), expressionsToEvaluate,
+        final Map<String, Serializable> result = formExpressionsAPI.evaluateProcessInitialExpressions(getSession(), processDefinition.getId(),
+                expressionsToEvaluate,
                 Locale.ENGLISH, context);
         Assert.assertEquals("transientDataValue", result.get("expressionToEvaluate"));
     }
@@ -302,7 +306,8 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
                         null).size() >= 1;
             }
         }.waitUntil());
-        final Serializable result = formExpressionsAPI.evaluateInstanceInitialExpression(getSession(), processInstance.getId(), expression, Locale.ENGLISH, false);
+        final Serializable result = formExpressionsAPI.evaluateInstanceInitialExpression(getSession(), processInstance.getId(), expression, Locale.ENGLISH,
+                false);
         Assert.assertEquals("Word", result.toString());
     }
 
@@ -353,7 +358,8 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
                 dependencies);
         final ArchivedProcessInstance archivedProcessInstance = processAPI.getArchivedProcessInstances(processInstance.getId(), 0, 1).get(0);
 
-        final Serializable result = formExpressionsAPI.evaluateInstanceInitialExpression(getSession(), archivedProcessInstance.getId(), expression, Locale.ENGLISH, false);
+        final Serializable result = formExpressionsAPI.evaluateInstanceInitialExpression(getSession(), archivedProcessInstance.getId(), expression,
+                Locale.ENGLISH, false);
         Assert.assertEquals("Word", result.toString());
     }
 
@@ -377,7 +383,8 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
         dependencies.add(new Expression("application", "application", ExpressionType.TYPE_VARIABLE.name(), String.class.getName(), null, null));
         final Expression expression = new Expression(null, "application", ExpressionType.TYPE_READ_ONLY_SCRIPT.name(), String.class.getName(), "GROOVY",
                 dependencies);
-        final Serializable result = formExpressionsAPI.evaluateInstanceInitialExpression(getSession(), processInstance.getId(), expression, Locale.ENGLISH, true);
+        final Serializable result = formExpressionsAPI.evaluateInstanceInitialExpression(getSession(), processInstance.getId(), expression, Locale.ENGLISH,
+                true);
         Assert.assertEquals("Excel", result.toString());
     }
 
@@ -426,7 +433,7 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
     public void should_getDocumentValue_work_with_existing_document_and_no_new_file() throws Exception {
 
         final Document doc = processAPI.attachDocument(processInstance.getId(), "documentName", "initialDoc.txt", null, new byte[] { 5, 0, 1, 4, 6, 5, 2, 3, 1,
-            5, 6, 8, 4, 6, 6, 3, 2, 4, 5 });
+                5, 6, 8, 4, 6, 6, 3, 2, 4, 5 });
 
         final FormFieldValue fieldValue = new FormFieldValue();
         fieldValue.setValueType(File.class.getName());
@@ -449,7 +456,7 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
     public void should_getDocumentValue_work_with_existing_document_and_new_file() throws Exception {
 
         final Document doc = processAPI.attachDocument(processInstance.getId(), "documentName", "initialDoc.txt", null, new byte[] { 5, 0, 1, 4, 6, 5, 2, 3, 1,
-            5, 6, 8, 4, 6, 6, 3, 2, 4, 5 });
+                5, 6, 8, 4, 6, 6, 3, 2, 4, 5 });
 
         final File file = File.createTempFile("testDoc", "txt");
         file.deleteOnExit();
@@ -461,7 +468,7 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
         fieldValue.setDisplayedValue(file.getName());
 
         final FormExpressionsAPIImpl formExpressionAPIImpl = spy(new FormExpressionsAPIImpl());
-        final TenantFolder tenantFolder = mock(TenantFolder.class);
+        final BonitaHomeFolderAccessor tenantFolder = mock(BonitaHomeFolderAccessor.class);
         doReturn(tenantFolder).when(formExpressionAPIImpl).getTenantFolder();
         doReturn(file).when(tenantFolder).getTempFile(any(String.class), any(Long.class));
 
@@ -474,13 +481,14 @@ public class FormExpressionsAPIImplIT extends FormsTestCase {
         Assert.assertEquals(file.getName(), result.getFileName());
     }
 
-    @Override
     @After
     public void tearDown() throws Exception {
-
         processAPI.disableProcess(processDefinition.getId());
-        processAPI.deleteProcess(processDefinition.getId());
-        super.tearDown();
+        do {
+        } while (processAPI.deleteProcessInstances(processDefinition.getId(), 0, 20) > 0);
+        do {
+        } while (processAPI.deleteArchivedProcessInstances(processDefinition.getId(), 0, 20) > 0);
+        processAPI.deleteProcessDefinition(processDefinition.getId());
 
     }
 

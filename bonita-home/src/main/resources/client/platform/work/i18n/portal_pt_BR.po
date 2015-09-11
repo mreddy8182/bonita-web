@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bonita-bpm-new-features\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-11 03:01+0100\n"
-"PO-Revision-Date: 2015-03-09 10:19-0400\n"
+"POT-Creation-Date: 2015-08-07 03:02+0200\n"
+"PO-Revision-Date: 2015-09-01 04:52-0400\n"
 "Last-Translator: charlessouillard <rodrigue.legall@bonitasoft.com>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: bonita-bpm-new-features\n"
 "X-Crowdin-Language: pt-BR\n"
-"X-Crowdin-File: /release-6.5.0/bonita-web/portal/portal.po\n"
+"X-Crowdin-File: /master/bonita-web/portal/portal.po\n"
 
 msgid " To do so, go to %entitymappingprofilelink%."
 msgstr " Para fazer isso, vá para %entitymappingprofilelink%."
@@ -133,6 +133,9 @@ msgstr "%nb_archived% arquivado"
 msgid "%nb_ongoing% ongoing"
 msgstr "%nb_ongoing% em curso"
 
+msgid "%pageName% is used by:"
+msgstr "%pageName% é usado por:"
+
 msgid "%rolename%"
 msgstr "%rolename%"
 
@@ -157,11 +160,38 @@ msgstr "%user%"
 msgid "%value% is not a valid value for %className%"
 msgstr "%value% não é um valor válido para %className%"
 
+msgid "'%applicationName%' as page '%associationName%'"
+msgstr "'%applicationName%' como página '%associationName%'"
+
+msgid "'%layoutName%' is used as layout for:"
+msgstr "'%layoutName%' é usado como layout para:"
+
+msgid "'%pageName%' is used by:"
+msgstr "%pageName% é utilizada por:"
+
+msgid "'%themeName%' is used as Theme for:"
+msgstr "'%themeName%' é utilizado como tema para:"
+
 msgid "?"
 msgstr "?"
 
+msgid "A Business Data Model has a .%fileExtension% extension"
+msgstr "Um Modelo de Dados de Negócio tem a extensão  .%fileExtension%"
+
 msgid "A business archive has a .bar extension"
 msgstr "Um arquivo de negócios tem uma extensão .bar"
+
+msgid "A form is a page mapped to case start or a human task."
+msgstr "Um formulário é uma página associada à um início de caso ou a uma tarefa humana."
+
+msgid "A page archive has a .zip extension"
+msgstr "Um arquivo de página a extensão .zip"
+
+msgid "A page with this name already exists."
+msgstr "Já existe uma página com este nome."
+
+msgid "A resource is imported as a zip archive containing a page.properties file and a resources folder."
+msgstr "Um recurso é importado na forma de um arquivo zip que contém um arquivo page.properties e uma pasta de recursos."
 
 msgid "Aborted by:"
 msgstr "Abortada por:"
@@ -177,6 +207,9 @@ msgstr "Ações"
 
 msgid "Activate"
 msgstr "Ativar"
+
+msgid "Activate a BDM"
+msgstr "Ativar um MDN"
 
 msgid "Activate selected users"
 msgstr "Ativar usuários selecionados"
@@ -238,8 +271,17 @@ msgstr "Adicionar uma nova categoria"
 msgid "Add a new category to %%"
 msgstr "Adicionar uma nova categoria para %%"
 
+msgid "Add a new custom page"
+msgstr "Adicionar uma nova página personalizada"
+
 msgid "Add a new membership to this user"
 msgstr "Adicionar uma nova associação para este usuário"
+
+msgid "Add a new resource (page, form, layout, theme, or REST API extension).<br/>This resource will be installed at global scope (not at process or application level).<br/>This archive (.zip file) must contain a page.properties file at the root level, and a folder named 'resources'. <br/>This properties file must at least define the name, displayName and contentType(default contentType is 'page'). <br/>The 'resources' folder must contain either the index.html or the Index.groovy file and the resources needed."
+msgstr "Adicione um novo recurso (página, formulário, layout, tema ou extensão de API REST). <br/> Este recurso será instalado no escopo global (não está associado a um processo ou uma aplicação). <br/> Este arquivo (arquivo. zip) deve conter um arquivo de propriedades (page.properties) na raiz, e uma pasta chamada 'resources'. <br/> O arquivo de propriedades deve definir pelo menos o nome (name), o nome de visualização (displayName) e tipo de conteúdo (contentType - o tipo padrão é 'page'). <br/> A pasta 'resources' deve conter um arquivo index.html ou um arquivo Index.groovy, assim que todos os recursos necessários."
+
+msgid "Add a resource"
+msgstr "Adicionar um recurso"
 
 msgid "Add a role"
 msgstr "Adicionar uma função"
@@ -261,6 +303,9 @@ msgstr "Adicionar um usuário au perfil %%"
 
 msgid "Add new memberships for %user%"
 msgstr "Adicionar novas associações para %user%"
+
+msgid "Add resource"
+msgstr "Adicionar recurso"
 
 msgid "Add selected group(s) to this profile"
 msgstr "Adicionar o(s) grupo(s) selecionado(s) neste perfil"
@@ -286,6 +331,9 @@ msgstr "Adicionar esta função para %actor_name%"
 msgid "Add this user to %actor_name%"
 msgstr "Adicionar este usuário a %actor_name%"
 
+msgid "Add your comment"
+msgstr "Adicione seu comentário"
+
 msgid "Address"
 msgstr "Endereço"
 
@@ -310,6 +358,18 @@ msgstr "Todas as funções"
 msgid "All groups"
 msgstr "Todos os grupos"
 
+msgid "All pages"
+msgstr "Todas as páginas"
+
+msgid "All processes are automatically paused."
+msgstr "Todos os processos são automaticamente suspensos."
+
+msgid "An archive has a .zip extension"
+msgstr "Um arquivo tem uma extensão .zip"
+
+msgid "An error has occurred when deploying Business Data Model."
+msgstr "Ocorreu um erro ao implantar o modelo de dados de negócio."
+
 msgid "An error occurred while creating a definition"
 msgstr "Ocorreu um erro ao criar uma definição"
 
@@ -327,6 +387,9 @@ msgstr "Gerenciamento de apps"
 
 msgid "April"
 msgstr "Abril"
+
+msgid "Archive"
+msgstr "Arquivo"
 
 msgid "Archived"
 msgstr "Arquivados"
@@ -379,6 +442,12 @@ msgstr "Tarefas disponíveis"
 msgid "Avatar"
 msgstr "Avatar"
 
+msgid "BPM Services are paused. You may need to resume them."
+msgstr "Os serviços bpm estão em pausa. Você precisa retomà-los."
+
+msgid "BPM services"
+msgstr "Serviços BPM"
+
 msgid "Back"
 msgstr "Voltar"
 
@@ -394,11 +463,17 @@ msgstr "Bonita BPM Portal"
 msgid "Browse your computer and select the business archive containing the process definition to install."
 msgstr "Procure no seu computador e selecione o arquivo de negócios (.bar) que contém a definição de processo a ser instalada."
 
+msgid "Business Data Model"
+msgstr "Modelo de Dados de Negócio"
+
 msgid "Business archive"
 msgstr "Business archive"
 
 msgid "Business card"
 msgstr "Cartão de visita"
+
+msgid "By default, forms are included in the process bar file for deployment."
+msgstr "Por padrão, os formulários são incluídos no arquivo de processo (.bar) para a instalação."
 
 msgid "Call activity"
 msgstr "Atividade de Chamada"
@@ -414,6 +489,12 @@ msgstr "Não é possível criar a função. Função '%roleName%' já existe"
 
 msgid "Can't create user. User '%userName%' already exists"
 msgstr "Não é possível criar o usuário. Usuário '%userName%' já existe"
+
+msgid "Can't import Applications."
+msgstr "Não foi possível importar aplicações."
+
+msgid "Can't import applications. An application '%token%' already exists"
+msgstr "Não é possível importar as aplicações. Uma aplicação 'token %' já existe."
 
 msgid "Can't import organization. Please check that your file is well-formed"
 msgstr "Não é possível importar a organização. Por favor, verifique se o arquivo está bem formatado"
@@ -499,14 +580,26 @@ msgstr "Clique aqui para escolher o arquivo. "
 msgid "Click here to go to Profile listing page"
 msgstr "Clique aqui para ir para a página de perfis"
 
+msgid "Click on Install to complete the deployment or Cancel to stop the deployment."
+msgstr "Clique em instalar para concluir a implantação ou em cancelar para interromper a implantação."
+
+msgid "Click to export this page"
+msgstr "Clique para exportar esta página"
+
 msgid "Close"
 msgstr "Fechar"
 
 msgid "Close without saving"
 msgstr "Fechar sem salvar"
 
+msgid "Comment"
+msgstr "Comentário"
+
 msgid "Comments"
 msgstr "Comentários"
+
+msgid "Compilation failure. Verify that the Index.groovy class implements the PageController interface."
+msgstr "Erro de compilação. Verifique se a classe Index.groovy implementa a interface PageController."
 
 msgid "Configuration"
 msgstr "Configuração"
@@ -514,8 +607,14 @@ msgstr "Configuração"
 msgid "Configuration state "
 msgstr "Estado de configuração "
 
+msgid "Configure BPM services for maintenance"
+msgstr "Configurar serviços BPM para manutenção"
+
 msgid "Confirm"
 msgstr "Confirmar"
+
+msgid "Confirm Delete?"
+msgstr "Confirmar a exclusão?"
 
 msgid "Confirm delete ?"
 msgstr "Confirmar exclusão?"
@@ -535,11 +634,26 @@ msgstr "Confirme a remoção"
 msgid "Confirm removing ?"
 msgstr "Confirmar a remoção?"
 
+msgid "Confirm services pause?"
+msgstr "Confirmar a suspensão do serviço?"
+
+msgid "Confirm services resumption?"
+msgstr "Confirmar o reinício dos serviços?"
+
+msgid "Confirm the new page"
+msgstr "Confirmar a nova página"
+
+msgid "Confirm the page adding"
+msgstr "Confirmar a adição da página"
+
 msgid "Confirm the password for this user"
 msgstr "Confirme a senha para este usuário"
 
 msgid "Confirm this action"
 msgstr "Confirmar esta ação"
+
+msgid "Confirm update"
+msgstr "Confirmar a atualização"
 
 msgid "Connector definitions"
 msgstr "Definições de conector"
@@ -556,11 +670,29 @@ msgstr "Conectores: %ok_ko%"
 msgid "Content"
 msgstr "Conteúdo"
 
+msgid "Content type is 'apiExtension'."
+msgstr "O tipo de conteúdo é 'apiExtension'."
+
+msgid "Content type is 'form'."
+msgstr "O tipo de conteúdo é 'form'."
+
+msgid "Content type is 'layout'."
+msgstr "O tipo de conteúdo é 'layout'."
+
+msgid "Content type is 'page'."
+msgstr "O tipo de conteúdo é 'page'."
+
+msgid "Content type is 'theme'."
+msgstr "O tipo de conteúdo é 'theme'."
+
 msgid "Country"
 msgstr "País"
 
 msgid "Create"
 msgstr "Criar"
+
+msgid "Create a form from the contract in Bonita BPM Studio."
+msgstr "Crie um formulário a partir do contrato no Bonita BPM Studio."
 
 msgid "Create a group"
 msgstr "Criar um grupo"
@@ -585,6 +717,12 @@ msgstr "Criar esta função"
 
 msgid "Create this user"
 msgstr "Criar este usuário"
+
+msgid "Created by"
+msgstr "Criado por"
+
+msgid "Created on"
+msgstr "Criado em"
 
 msgid "Creation date"
 msgstr "Data de criação"
@@ -622,14 +760,23 @@ msgstr "Excluir"
 msgid "Delete %resource_name%"
 msgstr "Excluir % resource_name %"
 
+msgid "Delete pages"
+msgstr "Excluir páginas"
+
 msgid "Delete selected groups"
 msgstr "Excluir grupos selecionados"
+
+msgid "Delete selected pages"
+msgstr "Excluir páginas selecionadas"
 
 msgid "Delete selected processes"
 msgstr "Excluir processos selecionados"
 
 msgid "Delete selected roles"
 msgstr "Excluir funções selecionadas"
+
+msgid "Delete the pages"
+msgstr "Excluir as páginas"
 
 msgid "Delete the process %app_name%?"
 msgstr "Excluir o processo %app_name%?"
@@ -694,6 +841,9 @@ msgstr "Fazer"
 msgid "Do not delete this membership"
 msgstr "Não excluir esta associação"
 
+msgid "Do you still want to delete the selected pages?"
+msgstr "Ainda deseja excluir as páginas selecionadas?"
+
 msgid "Done"
 msgstr "Feito"
 
@@ -718,6 +868,9 @@ msgstr "Venceu em:"
 msgid "Edit"
 msgstr "Editar"
 
+msgid "Edit %pageName%"
+msgstr "Editar %pageName%"
+
 msgid "Edit a role"
 msgstr "Editar uma função"
 
@@ -735,6 +888,9 @@ msgstr "Editar associações do ator %actor_name%"
 
 msgid "Edit roles of actor %actor_name%"
 msgstr "Editar funções do ator %actor_name%"
+
+msgid "Edit selected page"
+msgstr "Editar a página selecionada"
 
 msgid "Edit this group"
 msgstr "Editar este grupo"
@@ -844,6 +1000,9 @@ msgstr "O mapeamento de entidades deve ser resolvido antes de ativar o processo.
 msgid "Error"
 msgstr "Erro"
 
+msgid "Error during Application import file reading."
+msgstr "Erro na leitura do arquivo de importação de aplicações."
+
 msgid "Error occured when starting process %processId%"
 msgstr "Ocorreu um erro ao iniciar o processo %processId%"
 
@@ -862,6 +1021,12 @@ msgstr "Error when deleting groups"
 msgid "Error when deleting users"
 msgstr "Erro ao excluir usuários"
 
+msgid "Error when pausing BPM services"
+msgstr "Erro ao suspender os serviços BPM"
+
+msgid "Error when resuming BPM services"
+msgstr "Erro ao relançar os serviços BPM"
+
 msgid "Error when searching users"
 msgstr "Erro ao pesquisar usuários"
 
@@ -876,6 +1041,12 @@ msgstr "Erro ao atualizar informações de implantação do processo"
 
 msgid "Error when updating user"
 msgstr "Erro ao atualizar usuário"
+
+msgid "Error while trying to execute the task. Some required information is missing (contract not fulfilled)."
+msgstr "Erro ao tentar executar a tarefa. Algumas informações necessárias estão faltando (contrato não cumprido)."
+
+msgid "Error while trying to start the case. Some required information is missing (contract not fulfilled)."
+msgstr "Erro ao tentar iniciar o caso. Algumas informações necessárias estão faltando (contrato não cumprido)."
 
 msgid "Executed by"
 msgstr "Executado por"
@@ -907,6 +1078,9 @@ msgstr "Tarefas em erro"
 msgid "February"
 msgstr "Fevereiro"
 
+msgid "Filename too long. The zip filename must be no longer than %number% characters"
+msgstr "O nome do arquivo é longo demais. O nome do arquivo zip não deve exceder %number% caracteres"
+
 msgid "Filters are not supported by this API"
 msgstr "Filtros não são suportados nesta API"
 
@@ -928,6 +1102,15 @@ msgstr "Nome"
 msgid "For each actor, check that each entity (user, group, role, membership) has the relevant user profile in the Portal."
 msgstr "Para cada ator, verifique que cada entidade (usuário, grupo, função e associação) tem o perfil de usuário relevante no Portal."
 
+msgid "Form"
+msgstr "Formulário"
+
+msgid "Format: %namePrefix% followed only by alphanumeric characters."
+msgstr "Formato: %namePrefix% seguido somente por caracteres alfanuméricos."
+
+msgid "Forms"
+msgstr "Formulários"
+
 msgid "Fr"
 msgstr "Sex"
 
@@ -936,6 +1119,12 @@ msgstr "Obter mais informações sobre o caso especificado"
 
 msgid "Go back to previous view"
 msgstr "Voltar à vista anterior"
+
+msgid "Go to BPM Services"
+msgstr "Ir para serviços BPM"
+
+msgid "Go to Configuration > BPM Services."
+msgstr "Vá para a página Configuração > Serviços BPM."
 
 msgid "Go to page %pagenumber%"
 msgstr "Ir para a página %pagenumber%"
@@ -979,6 +1168,20 @@ msgstr "Ícone"
 msgid "Id:"
 msgstr "Id:"
 
+msgid "If these pages are used in a profile, the pages and related profile entries will be permanently deleted."
+msgstr "Se estas páginas são usadas em um perfil, as páginas e perfis relacionados serão excluídos permanentemente."
+
+msgid "If this page is used in a profile, the page and related profile entries will be permanently deleted."
+msgstr "Se esta páginas é usada em um perfil, a página e o perfil relacionados serão excluídos permanentemente."
+
+msgid "If you create a resource with the UI designer, the exported zip automatically has the correct format."
+msgstr "Se você criar um recurso com o UI Designer, o arquivo zip exportado terá automaticamente o formato correto."
+
+msgid "If you delete a page that is used by a process, the process becomes unresolved.\n"
+"Before deleting a page, you should also check whether it is used in a custom profile navigation."
+msgstr "Se você excluir uma página que é usada por um processo, o processo passará ao estado \"não resolvido\". \n"
+"Antes de excluir uma página, também verifique se ele é usado em uma navegação de perfil personalizado."
+
 msgid "Image files"
 msgstr "Arquivos de imagem"
 
@@ -990,6 +1193,9 @@ msgstr "Importar / Exportar"
 
 msgid "Import an existing organization"
 msgstr "Importar uma organização existente"
+
+msgid "Import and activate a new Business Data Model"
+msgstr "Importar e ativar um novo Modelo de Dados de Negócio"
 
 msgid "Import or export data"
 msgstr "Importar ou exportar dados"
@@ -1015,11 +1221,20 @@ msgstr "Instalar"
 msgid "Install a process"
 msgstr "Instalar um processo"
 
+msgid "Install the Business Data Model"
+msgstr "Instalar o Modelo de Dados de Negócio"
+
 msgid "Installed by"
 msgstr "Instalado por"
 
 msgid "Installed on"
 msgstr "Instalado em"
+
+msgid "Invalid Business Data Model content"
+msgstr "Conteúdo de modelo de dados de negócio inválido"
+
+msgid "It is still assigned to you until you release it."
+msgstr "Esta tarefa lhe será atribuída até você a libere."
 
 msgid "Item not found"
 msgstr "Item não encontrado"
@@ -1075,6 +1290,12 @@ msgstr "Última atualização em"
 msgid "Lastname"
 msgstr "Sobrenome"
 
+msgid "Layout"
+msgstr "Layout"
+
+msgid "Layouts"
+msgstr "Layouts"
+
 msgid "Link to the tasks"
 msgstr "Link para as tarefas"
 
@@ -1117,6 +1338,9 @@ msgstr "dd/mm/yyyy hh:MM:ss"
 msgid "MMMM dd, yyyy"
 msgstr "dd/MM/yyyy"
 
+msgid "Make sure all your processes are compatible with the new Business Data Model."
+msgstr "Certifique-se de que todos os processos são compatíveis com o novo modelo de Dados de negócio."
+
 msgid "Manage Look and Feel"
 msgstr "Gerenciar aparência"
 
@@ -1134,6 +1358,9 @@ msgstr "Gerencie processos que uma entidade com esse perfil pode supervisionar c
 
 msgid "Manage profiles"
 msgstr "Gerenciar perfis"
+
+msgid "Manage resources"
+msgstr "Gerenciar Recursos"
 
 msgid "Manage tasks of processes that an entity with this profile can supervise as PM."
 msgstr "Gerencie tarefas de processos que uma entidade com esse perfil pode supervisionar como Gerente de Processo."
@@ -1168,6 +1395,9 @@ msgstr "Mapeamento de associações"
 msgid "Memberships: %nb_memberships%"
 msgstr "Associações: %nb_memberships%"
 
+msgid "Menu name"
+msgstr "Nome do menu"
+
 msgid "Mo"
 msgstr "Seg"
 
@@ -1179,6 +1409,9 @@ msgstr "Monitoramento"
 
 msgid "More"
 msgstr "Mais"
+
+msgid "More information"
+msgstr "Mais informações"
 
 msgid "Move this element after the next one"
 msgstr "Mover este elemento abaixo do próximo"
@@ -1193,7 +1426,7 @@ msgid "Multi-instanciation activity (launches and controls instances execution)"
 msgstr "Atividade de multi instanciação (lança e controla a execução de instâncias)"
 
 msgid "My cases"
-msgstr "Meus cases"
+msgstr "Meus casos"
 
 msgid "My tasks"
 msgstr "Minhas tarefas"
@@ -1203,6 +1436,9 @@ msgstr "N/A"
 
 msgid "Name"
 msgstr "Nome"
+
+msgid "Name for the URL"
+msgstr "Nome da URL"
 
 msgid "Name of the role"
 msgstr "Nome da função"
@@ -1218,6 +1454,9 @@ msgstr "Nome da variável"
 
 msgid "Next"
 msgstr "Próximo"
+
+msgid "Next >"
+msgstr "Próximo >"
 
 msgid "No"
 msgstr "Não"
@@ -1270,6 +1509,12 @@ msgstr "Outubro"
 msgid "Ok"
 msgstr "Ok"
 
+msgid "Only one Business Data Model can be active at a time."
+msgstr "Apenas um Modelo de Dados de Negócio pode estar ativo."
+
+msgid "Only the technical user can log in to the Portal."
+msgstr "Somente o usuário técnico pode fazer login no Portal."
+
 msgid "Only the value attribute can be updated"
 msgstr "Apenas o valor do atributo pode ser atualizado"
 
@@ -1300,11 +1545,25 @@ msgstr "Nome original"
 msgid "Other"
 msgstr "Outros"
 
-msgid "Oups... This item is not available anymore.\nYou will be redirected to a safest place."
-msgstr "Oups... Este item não está mais disponível. \n Você será redirecionado para um lugar mais seguro."
+msgid "Oups... This item is not available anymore.\n"
+"You will be redirected to a safest place."
+msgstr "Oups... Este item não está mais disponível. \n"
+" Você será redirecionado para um lugar mais seguro."
 
 msgid "Overview"
 msgstr "Síntese"
+
+msgid "Page"
+msgstr "Página"
+
+msgid "Page archive"
+msgstr "Arquivo da página"
+
+msgid "Pages"
+msgstr "Páginas"
+
+msgid "Parameters"
+msgstr "Parâmetros"
 
 msgid "Parameters must be resolved before enabling the Process."
 msgstr "Os parâmetros devem ser resolvidos antes de ativar o processo."
@@ -1335,6 +1594,12 @@ msgstr "A senha deve conter pelo menos %number% letras maiúsculas"
 
 msgid "Passwords don't match"
 msgstr "As senhas não combinam"
+
+msgid "Pause"
+msgstr "Suspender"
+
+msgid "Paused"
+msgstr "Suspenso"
 
 msgid "Pending"
 msgstr "Pendente"
@@ -1423,6 +1688,9 @@ msgstr "Privilégio"
 msgid "RESOLVED"
 msgstr "RESOLVED"
 
+msgid "REST API extensions"
+msgstr "Extensões de API REST"
+
 msgid "Ready since %task_last_update%"
 msgstr "Pronto desde %task_last_update%"
 
@@ -1430,7 +1698,7 @@ msgid "Refresh this table"
 msgstr "Atualizar esta tabela"
 
 msgid "Release"
-msgstr "Release"
+msgstr "Liberar"
 
 msgid "Remove"
 msgstr "Remover"
@@ -1441,11 +1709,29 @@ msgstr "Remover esta categoria"
 msgid "Reports"
 msgstr "Relatórios"
 
+msgid "Request parameter \"id\" must be set."
+msgstr "O parâmetro id\" da interrogação deve ser definido."
+
 msgid "Resolved"
 msgstr "Resolvido"
 
 msgid "Resolved processes"
 msgstr "Processos resolvidos"
+
+msgid "Resources"
+msgstr "Recursos"
+
+msgid "Resources not recognized:"
+msgstr "Recursos não reconhecidos:"
+
+msgid "Rest API extension"
+msgstr "Extensão de API REST"
+
+msgid "Resume"
+msgstr "Relançar"
+
+msgid "Resume BPM Services"
+msgstr "Retomar Serviços BPM"
 
 msgid "Role"
 msgstr "Função"
@@ -1462,6 +1748,9 @@ msgstr "Mapeamento de funções"
 msgid "Roles: %nb_roles%"
 msgstr "Funções: %nb_roles%"
 
+msgid "Running"
+msgstr "Executando"
+
 msgid "Sa"
 msgstr "Sab"
 
@@ -1476,6 +1765,9 @@ msgstr "Salvar alterações neste grupo"
 
 msgid "Save this user modifications"
 msgstr "Salvar as modificações do usuário"
+
+msgid "Saving a page will change it immediately for all users who can view it."
+msgstr "Salvar uma página a modificará imediatamente para todos os usuários que podem visualizá-la."
 
 msgid "Search"
 msgstr "Pesquisar"
@@ -1515,9 +1807,6 @@ msgstr "Selecione um usuário digitando parte do seu nome."
 
 msgid "Select a user to be added to actor"
 msgstr "Selecione um usuário a ser adicionado ao ator"
-
-msgid "Select a user to start process %app_name% %app_version%"
-msgstr "Selecione um usuário para iniciar o processo %app_name% %app_version%"
 
 msgid "Select an avatar for this group"
 msgstr "Selecione um avatar para este grupo"
@@ -1561,6 +1850,15 @@ msgstr "Tarefa de serviço"
 msgid "Service task (performed automatically)"
 msgstr "Tarefa de serviço (executada automaticamente)"
 
+msgid "Services will be paused for maintenance.\n"
+msgstr "Os serviços serão suspensos para manutenção.\n"
+
+msgid "Services will resume. Users will be able to log in.\n"
+msgstr "Os serviços serão relançados. Os usuários poderão conectar-se.\n"
+
+msgid "Session expired. Please log in again."
+msgstr "Sessão expirada. Por favor, conecte-se novamente."
+
 msgid "Settings"
 msgstr "Configurações"
 
@@ -1597,6 +1895,9 @@ msgstr "Pular esta tarefa"
 msgid "Skipped on %task_last_update% by %executed_by%"
 msgstr "Ignorado em %task_last_update% por %executed_by%"
 
+msgid "Some of the pages you selected for deletion are used by processes:"
+msgstr "Algumas das páginas selecionadas para exclusão são utilizadas por processos:"
+
 msgid "Sorry the variable %variableName% has a type which is not editable"
 msgstr "Desculpe, a variável %variableName% é de um tipo não editável"
 
@@ -1609,8 +1910,8 @@ msgstr "Ordenação não é suportada nesta API"
 msgid "Start"
 msgstr "Iniciar"
 
-msgid "Start a process on behalf of another user"
-msgstr "Iniciar um processo em nome de outro usuário"
+msgid "Start a case"
+msgstr "Iniciar um caso"
 
 msgid "Start an instance of process %app_name%"
 msgstr "Iniciar uma instância do processo %app_name%"
@@ -1620,9 +1921,6 @@ msgstr "Data de início"
 
 msgid "Start this process"
 msgstr "Iniciar esse processo"
-
-msgid "Start this process on behalf of selected user"
-msgstr "Iniciar esse processo em nome de usuário selecionado"
 
 msgid "Started by"
 msgstr "Iniciado por"
@@ -1648,17 +1946,29 @@ msgstr "Estatísticas"
 msgid "Status"
 msgstr "Status"
 
+msgid "Status: "
+msgstr "Estado: "
+
 msgid "Su"
 msgstr "Dom"
 
 msgid "Sub groups"
 msgstr "Sub groups"
 
+msgid "Submit"
+msgstr "Enviar"
+
+msgid "Submit a comment"
+msgstr "Enviar um comentário"
+
 msgid "Subprocess"
 msgstr "Sub-processo"
 
 msgid "Subprocess version"
 msgstr "Versão do subprocesso"
+
+msgid "Subscription edition: To replace a form in a deployed process, upload the form zip and update the form mapping in the Portal process view."
+msgstr "Edição de assinatura: para substituir um formulário em um processo instalado, carregue o arquivo zip do formulário e atualize a associação de formulários a partir dos detalhes do processo no Portal."
 
 msgid "Success"
 msgstr "Sucesso"
@@ -1699,11 +2009,28 @@ msgstr "Aviso de usuário técnico"
 msgid "Th"
 msgstr "Qui"
 
+msgid "The BPM Services must be paused"
+msgstr "Os serviços BPM devem ser suspensos"
+
+msgid "The BPM Services must be paused before importing a new Business Data Model."
+msgstr "Os serviços de BPM devem ser suspensos antes de importar um novo Modelo de Dados de Negócio."
+
+msgid "The Business Data Model was successfully installed."
+msgstr "O Modelo de Dados de Negócio foi instalado com sucesso."
+
+msgid "The Business Data Model will now be installed.\n"
+"Please note that existing business database tables will be modified definitively. This action cannot be reversed. It is highly recommended to backup the database before proceeding."
+msgstr "O Modelo de Dados de Negócio será instalado agora. \n"
+"Saiba que as tabelas do banco de dados de negócio existente serão modificadas definitivamente. Esta ação não pode ser revertida. É altamente recomendável fazer uma cópia de segurança do banco de dados antes de prosseguir."
+
 msgid "The Process cannot be enabled"
 msgstr "O processo não pode ser ativado"
 
 msgid "The Process manager can supervise designated processes, and manage cases and tasks of those processes."
 msgstr "O Gerente de Processo pode supervisionar os processos designados e gerenciar casos e tarefas desses processos."
+
+msgid "The URL token for accessing this page"
+msgstr "O token da URL para acessar esta página"
 
 msgid "The administrator can install a process, manage the organization, and handle some errors (for example, by replaying a task)."
 msgstr "O administrador pode instalar um processo, gerenciar a organização e manipular alguns erros (por exemplo, reexecutar uma tarefa)."
@@ -1711,11 +2038,19 @@ msgstr "O administrador pode instalar um processo, gerenciar a organização e m
 msgid "The application encountered an error."
 msgstr "Ocorreu um erro na aplicação."
 
-msgid "The application encountered an unexpected error. Please try again.\nIf the error persists, please contact Bonitasoft support"
-msgstr "O aplicativo encontrou um erro inesperado. Por favor, tente novamente.\nSe o erro persistir, contacte o suporte da Bonitasoft"
+msgid "The application encountered an unexpected error. Please try again.\n"
+"If the error persists, please contact Bonitasoft support"
+msgstr "O aplicativo encontrou um erro inesperado. Por favor, tente novamente.\n"
+"Se o erro persistir, contacte o suporte da Bonitasoft"
+
+msgid "The case %caseId% has been started successfully."
+msgstr "O caso %caseId% foi iniciado com êxito."
 
 msgid "The configuration state of the process"
 msgstr "O estado da configuração do processo"
+
+msgid "The content type is defined in page.properties."
+msgstr "O tipo de conteúdo é definido no arquivo page.properties."
 
 msgid "The current state of the case"
 msgstr "O estado atual da instância de processo"
@@ -1744,6 +2079,9 @@ msgstr "A data da última atualização do usuário"
 msgid "The date when the case was updated"
 msgstr "A data da última atualização da instância de processo"
 
+msgid "The date when the page was updated"
+msgstr "A data na qual a página foi atualizada"
+
 msgid "The date when the process was updated"
 msgstr "A data na qual o processo foi atualizado"
 
@@ -1752,6 +2090,9 @@ msgstr "Data limite de execução da tarefa"
 
 msgid "The date when the task was assigned"
 msgstr "Data de atribuição da tarefa"
+
+msgid "The date when this page has been added"
+msgstr "Data na qual esta página foi adicionada"
 
 msgid "The date when this process has been installed"
 msgstr "A data na qual este processo foi instalado"
@@ -1780,8 +2121,14 @@ msgstr "O caminho de acesso do grupo pai"
 msgid "The id of the related case"
 msgstr "A identificação da instância de processo relacionada"
 
+msgid "The index file must be present in the zip but is ignored, so can be empty."
+msgstr "O arquivo de índice deve estar presente no  arquivo zip mas é ignorado, portanto, ele pode ser vazio."
+
 msgid "The item you try to edit can't be retrieved due to a connection problem. Please contact your administrator."
 msgstr "O item que você está tentando editar não pôde ser recuperado devido a um problema de conexão. Por favor, contate o administrador."
+
+msgid "The name for the URL must start with %namePrefix% followed only by alphanumeric characters."
+msgstr "O nome da URL deve começar com %namePrefix% seguido somente de caracteres alfanuméricos."
 
 msgid "The number of archived cases."
 msgstr "O número de casos arquivados."
@@ -1795,8 +2142,8 @@ msgstr "O número de casos em curso."
 msgid "The only mandatory filter is %name%"
 msgstr "O único filtro obrigatório é %name%"
 
-msgid "The openned case will be marked as started by him."
-msgstr "A instância de processo aberta será marcada como iniciada por ele."
+msgid "The page allows users with relevant profiles to access the following permissions:"
+msgstr "A página permite que usuários com os perfis relevantes acessem as seguintes autorizações:"
 
 msgid "The page you try to display is out of range."
 msgstr "A página que você está tentando exibir está fora do intervalo."
@@ -1809,6 +2156,9 @@ msgstr "Prioridade da tarefa"
 
 msgid "The process responsible for the creation of this task"
 msgstr "O processo responsável pela criação desta tarefa"
+
+msgid "The resources folder must contain an Index.groovy class or an index.html file and  optionally can contain some additional resources."
+msgstr "A pasta de recursos deve conter um arquivo Index.groovy ou um arquivo index.html e opcionalmente pode conter alguns recursos adicionais."
 
 msgid "The server is not available"
 msgstr "O servidor não está disponível"
@@ -1825,17 +2175,32 @@ msgstr "Estado da tarefa"
 msgid "The sub process responsible for the creation of this task"
 msgstr "O sub-processo responsável pela criação desta tarefa"
 
+msgid "The task %taskName% has been executed. The task list is being refreshed."
+msgstr "A tarefa %taskName% foi executada executada. A lista de tarefas está sendo atualizada."
+
+msgid "The task %taskName% has not been executed. "
+msgstr "A tarefa %taskName% não foi executada. "
+
+msgid "The task is going to be executed. No form is needed. You can enter a comment and confirm, or cancel."
+msgstr "A tarefa vai ser executada. Nenhum formulário é necessário. É possível inserir um comentário e confirmar ou cancelar."
+
 msgid "The type of the task"
 msgstr "O tipo da tarefa"
 
 msgid "The user can view and perform tasks and can start a new case of a process."
 msgstr "O usuário pode visualizar e executar tarefas e pode iniciar um novo caso de um processo."
 
+msgid "The user that has added this page"
+msgstr "O usuário que adicionou esta página"
+
 msgid "The user that has started this case"
 msgstr "O usuário que iniciou esta instância de processo"
 
 msgid "The user that has uploaded this process"
 msgstr "O usuário que instalou este processo"
+
+msgid "The user that updated this page"
+msgstr "O usuário que atualizou esta página"
 
 msgid "The user who did the task."
 msgstr "O usuário que fez a tarefa."
@@ -1849,8 +2214,23 @@ msgstr "A versão do processo"
 msgid "The version of the process that created this case"
 msgstr "A versão do processo que criou este caso"
 
+msgid "Theme"
+msgstr " Tema"
+
+msgid "Themes"
+msgstr "Temas"
+
+msgid "These %item_name_plural% and related profile entries will be permanently deleted."
+msgstr "Estes %item_name_plural% e as entradas do perfil relacionado serão excluídos permanentemente."
+
 msgid "These %item_name_plural% will be definitively deleted."
 msgstr "Estes %item_name_plural% serão definitivamente excluídos."
+
+msgid "These pages cannot be deleted because at least one is used in an application. You must remove a page from an application before you can delete it."
+msgstr "Estas páginas não podem ser excluídas porque pelo menos uma é usado em uma aplicação. Você deve remover a associação de uma página a uma aplicação antes de poder excluí-la."
+
+msgid "This %item_name% and related profile entries will be permanently deleted."
+msgstr "Este %item_name% e as entradas do perfil relacionadas serão excluídas permanentemente."
 
 msgid "This %item_name% will be definitively deleted."
 msgstr "Este %item_name% será definitivamente excluído."
@@ -1861,6 +2241,9 @@ msgstr "Esta categoria já foi adicionada a este processo"
 msgid "This category was not found or this field is mandatory"
 msgstr "Esta categoria não foi encontrada ou este campo é obrigatório"
 
+msgid "This file format is not allowed. Only .zip files are allowed."
+msgstr "Este formato de arquivo não é permitido. Apenas os arquivos .zip são permitidos."
+
 msgid "This group has already been mapped to actor"
 msgstr "Este grupo já foi designado como ator"
 
@@ -1869,6 +2252,11 @@ msgstr "Esta associação já foi designada como ator"
 
 msgid "This membership is already added to user"
 msgstr "Esta associação já foi adicionada ao usuário"
+
+msgid "This page has no authorization permissions defined. If the page uses REST resources and authorization checking is activated,\n"
+" update the page definition to specify the list of resources used."
+msgstr "Esta página não tem nenhuma autorização definida. Caso a página use recursos REST e verificação de autorização está ativada, \n"
+" atualize a definição da página para especificar a lista de recursos utilizados."
 
 msgid "This profile will be available on next login to the users who are mapped. If you mapped the profile to yourself, it will be available after you refresh the page in your browser."
 msgstr "Este perfil estará disponível no próximo login para os usuários que são mapeadas. Se você mapeou o perfil para você mesmo, ele estará disponível depois que você atualizar a página no seu navegador."
@@ -1891,11 +2279,20 @@ msgstr "Esta ação importará um arquivo que contém os dados de toda a organiz
 msgid "Title"
 msgstr "Título"
 
+msgid "To change the content of this custom page, specify a new zip file in the field below."
+msgstr "Para alterar o conteúdo desta página personalizada, especifique um novo arquivo zip no campo abaixo."
+
 msgid "To do"
 msgstr "Para fazer"
 
 msgid "To do so, contact your administrator"
 msgstr "Para fazer isso, contate o administrador"
+
+msgid "To share a form between processes, upload the zip and map it to the relevant processes and tasks."
+msgstr "Para compartilhar um formulário entre processos, carregue o arquivo zip e mapeie-o às tarefas e aos processos relevantes."
+
+msgid "To view an imported page, add it to an application page list and navigation."
+msgstr "Para visualizar uma página importada, adicione-a à lista de páginas e à navegação de uma aplicação."
 
 msgid "Tu"
 msgstr "Ter"
@@ -1917,6 +2314,9 @@ msgstr "Digite para pesquisar"
 
 msgid "UNRESOLVED"
 msgstr "UNRESOLVED"
+
+msgid "URL token"
+msgstr "Token da URL"
 
 msgid "Unable to deploy business archive"
 msgstr "Não foi possível instalar o arquivo"
@@ -1941,6 +2341,9 @@ msgstr "Não foi possível obter as definições de dados de processo, pois o pr
 
 msgid "Unable to log in. Please check your username and password."
 msgstr "Não foi possível logar. Por favor, verifique seu nome de usuário e senha."
+
+msgid "Unable to uninstall the Business Data Model. Please pause the BPM Services first. Go to Configuration > BPM Services."
+msgstr "Não é possível desinstalar o modelo de dados de negócio. Por favor, suspenda os serviços BPM primeiro . Vá para Configuração > Serviços BPM."
 
 msgid "Unassign"
 msgstr "Cancelar a atribuição"
@@ -1972,6 +2375,9 @@ msgstr "Atualizar uma função"
 msgid "Update date"
 msgstr "Data de atualização"
 
+msgid "Update the page"
+msgstr "Atualizar a página"
+
 msgid "Update the user"
 msgstr "Atualizar o usuário"
 
@@ -1980,6 +2386,12 @@ msgstr "Atualizar esta página usando a consulta definida"
 
 msgid "Update this role"
 msgstr "Atualizar esta função"
+
+msgid "Updated by"
+msgstr "Atualizado por"
+
+msgid "Updated on"
+msgstr "Atualizado em"
 
 msgid "User"
 msgstr "Usuário"
@@ -2005,6 +2417,15 @@ msgstr "Usuários"
 msgid "Users mapping"
 msgstr "Mapeamento de usuários"
 
+msgid "Users who are currently logged in, including Administrator users, are automatically logged out."
+msgstr "Os usuários que estão atualmente conectados, incluindo administradores, são desconectados automaticamente."
+
+msgid "Users who are filling in forms when the services are paused will lose any information that has not been submitted."
+msgstr "Os usuários que estiverem preenchendo formulários quando o serviço for suspenso perderão toda informação que não tenha sido submetida."
+
+msgid "Users with the app above can see this page."
+msgstr "Usuários com acesso à aplicação acima podem ver esta página."
+
 msgid "Users: %nb_users%"
 msgstr "Usuários: %nb_users%"
 
@@ -2017,14 +2438,14 @@ msgstr "Versão"
 msgid "Version of the process"
 msgstr "Versão do processo"
 
+msgid "Visible to"
+msgstr "Visível para"
+
 msgid "Warning"
 msgstr "Aviso"
 
 msgid "Warning:"
 msgstr "Aviso:"
-
-msgid "Warning: you are logged as technical user. This user has limited rights, its purpose is to initialize the organisation."
-msgstr "Aviso: você está conectado como usuário técnico. Este utilizador tem direitos limitados, sua finalidade é inicializar a organização."
 
 msgid "We"
 msgstr "Qua"
@@ -2035,14 +2456,35 @@ msgstr "Bem-vindo ao"
 msgid "Welcome: "
 msgstr "Bem-vindo: "
 
+msgid "When you are done, the BPM Services must be resumed to allow users to log in again."
+msgstr "Quando tiver terminado, os serviços de BPM deve ser retomados para permitir aos usuários fazer login novamente."
+
+msgid "When you resume the services, tell your users that they can log back in to the Portal."
+msgstr "Ao reativar o serviço, avise os usuários que eles podem conectar-se novamente ao Portal."
+
 msgid "Worked on"
 msgstr "Trabalhou em"
 
 msgid "Yes"
 msgstr "Sim"
 
-msgid "You risk interrupting one or more processes.\n\nDeactivating the only user able to perform a task(s), will cause the interruption of a Process.\n\nBefore proceeding, you may want to go to the 'More' page of the process and check the actor mapping.\n\nAre you sure you want to deactivate this user now ?"
-msgstr "Existe o risco de interromper um ou mais processos.\n\nDesativar o único usuário capaz de executar uma tarefa causará a interrupção do processo.\n\nAntes de continuar, talvez deseje ir para a página 'Mais' do processo e verificar o mapeamento de atores.\n\nTem certeza que deseja desativar este usuário agora ?"
+msgid "You are going to start a new case. No form is needed."
+msgstr "Um novo caso será iniciado. Nenhum formulário é necessário."
+
+msgid "You are logged as technical user. This user has limited rights. Its purpose is to initialize the organization and activate a Business Data Model if needed."
+msgstr "Você está logado como usuário técnico. Este utilizador tem direitos limitados. Seu objetivo é a organização de inicializar e ativar um modelo de dados de negócios, se necessário."
+
+msgid "You need to pause the BPM services when you make an update to your environment that cannot be done while there are active users. When the services are paused:"
+msgstr "É necessário suspender o serviço BPM para fazer atualizações que não podem ser feitas enquanto há usuários ativos. Quando o serviço é suspenso:"
+
+msgid "You risk interrupting one or more processes.\n\n"
+"Deactivating the only user able to perform a task(s), will cause the interruption of a Process.\n\n"
+"Before proceeding, you may want to go to the 'More' page of the process and check the actor mapping.\n\n"
+"Are you sure you want to deactivate this user now ?"
+msgstr "Existe o risco de interromper um ou mais processos.\n\n"
+"Desativar o único usuário capaz de executar uma tarefa causará a interrupção do processo.\n\n"
+"Antes de continuar, talvez deseje ir para a página 'Mais' do processo e verificar o mapeamento de atores.\n\n"
+"Tem certeza que deseja desativar este usuário agora ?"
 
 msgid "You will be rediected"
 msgstr "Você será redirecionado"
@@ -2050,8 +2492,14 @@ msgstr "Você será redirecionado"
 msgid "Your session has expired. Please log in again and retry."
 msgstr "Sua sessão expirou. Por favor, faça o login e tente novamente."
 
+msgid "Zip Archive"
+msgstr "Arquivo Zip"
+
 msgid "Zip code"
 msgstr "Código Postal"
+
+msgid "Zip file structure error. Check that your .zip contains a well-formed page.properties and either the index.html or the Index.groovy file. For details, see the documentation or the example page readme (available in the custom page list)."
+msgstr "Erro de estrutura de arquivo de zip. Verifique que o seu .zip contém um page.properties bem formado e um index.html ou um Index.groovy. Para maiores detalhes, consulte a documentação ou a página de exemplo readme (disponível na lista de páginas personalizadas)."
 
 msgid "add"
 msgstr "Adicionar"
@@ -2061,6 +2509,9 @@ msgstr "crescente"
 
 msgid "by"
 msgstr "por"
+
+msgid "cancel"
+msgstr "Cancelar"
 
 msgid "create"
 msgstr "criar"
@@ -2091,6 +2542,9 @@ msgstr "importação/exportação de organização"
 
 msgid "in %time%"
 msgstr "em %time%"
+
+msgid "in menu "
+msgstr "no menu "
 
 msgid "manage cases"
 msgstr "gerenciar casos"
@@ -2127,6 +2581,12 @@ msgstr "mo"
 
 msgid "or"
 msgstr "ou"
+
+msgid "page"
+msgstr "página"
+
+msgid "pages"
+msgstr "páginas"
 
 msgid "process"
 msgstr "processo"

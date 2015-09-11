@@ -33,8 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FileUtils;
-import org.bonitasoft.console.common.server.login.LoginManager;
-import org.bonitasoft.console.common.server.utils.TenantFolder;
+import org.bonitasoft.console.common.server.utils.BonitaHomeFolderAccessor;
+import org.bonitasoft.console.common.server.utils.SessionUtil;
 import org.bonitasoft.engine.session.APISession;
 
 /**
@@ -128,7 +128,7 @@ public abstract class ResourceServlet extends HttpServlet {
         fileName = URLDecoder.decode(fileName, "UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        final File resourcesFolder = getResourcesParentFolder(request);
+        final File resourcesParentFolder = getResourcesParentFolder(request);
         final String subFolderName = getSubFolderName();
         String subFolderSuffix;
         if (subFolderName != null) {
@@ -138,13 +138,15 @@ public abstract class ResourceServlet extends HttpServlet {
         }
 
         try {
-            final File resourceFolder = new File(resourcesFolder, resourceName + subFolderSuffix);
+            final File resourceFolder = new File(resourcesParentFolder, resourceName + subFolderSuffix);
             final File file = new File(resourceFolder, fileName);
-            final TenantFolder tenantFolder = new TenantFolder();
+            final BonitaHomeFolderAccessor tenantFolder = new BonitaHomeFolderAccessor();
+            if (!tenantFolder.isInFolder(resourceFolder, resourcesParentFolder)) {
+                throw new ServletException("For security reasons, access to this file paths" + resourceFolder.getAbsolutePath() + " is restricted.");
+            }
             if (!tenantFolder.isInFolder(file, resourceFolder)) {
                 throw new ServletException("For security reasons, access to this file paths" + file.getAbsolutePath() + " is restricted.");
             }
-
             final String lowerCaseFileName = fileName.toLowerCase();
             if (lowerCaseFileName.endsWith(".jpg")) {
                 contentType = "image/jpeg";
@@ -183,7 +185,6 @@ public abstract class ResourceServlet extends HttpServlet {
             response.setContentType(contentType);
             response.setContentLength(content.length);
             response.setBufferSize(content.length);
-            response.setHeader("Cache-Control", "no-cache");
             final OutputStream out = response.getOutputStream();
             out.write(content, 0, content.length);
             response.flushBuffer();
@@ -202,7 +203,7 @@ public abstract class ResourceServlet extends HttpServlet {
         long tenantId = 1;
         final String tenantFromRequest = request.getParameter(TENANT_PARAM);
         if (tenantFromRequest == null) {
-            final APISession apiSession = (APISession) session.getAttribute(LoginManager.API_SESSION_PARAM_KEY);
+            final APISession apiSession = (APISession) session.getAttribute(SessionUtil.API_SESSION_PARAM_KEY);
             if (apiSession != null) {
                 tenantId = apiSession.getTenantId();
             }

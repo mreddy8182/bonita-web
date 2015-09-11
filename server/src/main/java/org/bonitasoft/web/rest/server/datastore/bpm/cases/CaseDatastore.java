@@ -14,9 +14,6 @@
  */
 package org.bonitasoft.web.rest.server.datastore.bpm.cases;
 
-import java.util.List;
-import java.util.Map;
-
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.bpm.process.ProcessInstance;
@@ -42,12 +39,15 @@ import org.bonitasoft.web.toolkit.client.common.exception.api.APIException;
 import org.bonitasoft.web.toolkit.client.common.util.MapUtil;
 import org.bonitasoft.web.toolkit.client.data.APIID;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Séverin Moussel
  * @author Celine Souchet
  */
 public class CaseDatastore extends CommonDatastore<CaseItem, ProcessInstance> implements DatastoreHasGet<CaseItem>, DatastoreHasSearch<CaseItem>,
-        DatastoreHasDelete, DatastoreHasAdd<CaseItem> {
+DatastoreHasDelete, DatastoreHasAdd<CaseItem> {
 
     public CaseDatastore(final APISession engineSession) {
         super(engineSession);
@@ -60,6 +60,17 @@ public class CaseDatastore extends CommonDatastore<CaseItem, ProcessInstance> im
 
     public long count(final String search, final String orders, final Map<String, String> filters) {
         return search(0, 0, search, orders, filters).getTotal();
+    }
+
+    /**
+     * convenience for stubbing during unit test
+     *
+     * @see org.bonitasoft.web.rest.server.datastore.CommonDatastore#convertEngineToConsoleSearch(int, int, org.bonitasoft.engine.search.SearchResult)
+     */
+    @Override
+    protected ItemSearchResult<CaseItem> convertEngineToConsoleSearch(final int page, final int resultsByPage,
+            final SearchResult<ProcessInstance> engineSearchResults) {
+        return super.convertEngineToConsoleSearch(page, resultsByPage, engineSearchResults);
     }
 
     @Override
@@ -110,7 +121,12 @@ public class CaseDatastore extends CommonDatastore<CaseItem, ProcessInstance> im
             return processAPI.searchOpenProcessInstancesInvolvingUser(MapUtil.getValueAsLong(filters, CaseItem.FILTER_USER_ID), searchOptions);
         }
         if (filters.containsKey(CaseItem.FILTER_SUPERVISOR_ID)) {
-            return processAPI.searchOpenProcessInstancesSupervisedBy(MapUtil.getValueAsLong(filters, CaseItem.FILTER_SUPERVISOR_ID), searchOptions);
+            if (filters.containsKey(CaseItem.FILTER_STATE)
+                    && ("failed".equalsIgnoreCase(filters.get(CaseItem.FILTER_STATE)) || "error".equalsIgnoreCase(filters.get(CaseItem.FILTER_STATE)))) {
+                return processAPI.searchFailedProcessInstancesSupervisedBy(MapUtil.getValueAsLong(filters, CaseItem.FILTER_SUPERVISOR_ID), searchOptions);
+            } else {
+                return processAPI.searchOpenProcessInstancesSupervisedBy(MapUtil.getValueAsLong(filters, CaseItem.FILTER_SUPERVISOR_ID), searchOptions);
+            }
         }
         if (filters.containsKey(CaseItem.FILTER_STATE)
                 && ("failed".equalsIgnoreCase(filters.get(CaseItem.FILTER_STATE)) || "error".equalsIgnoreCase(filters.get(CaseItem.FILTER_STATE)))) {
@@ -137,6 +153,7 @@ public class CaseDatastore extends CommonDatastore<CaseItem, ProcessInstance> im
             final ProcessAPI processApi = getProcessAPI();
             for (final APIID id : ids) {
                 processApi.deleteProcessInstance(id.toLong());
+                processApi.deleteArchivedProcessInstancesInAllStates(id.toLong());
             }
         } catch (final Exception e) {
             throw new APIException(e);

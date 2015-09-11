@@ -5,12 +5,10 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2.0 of the License, or
  * (at your option) any later version.
- * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -18,6 +16,7 @@ package org.bonitasoft.test.toolkit.bpm;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.bonitasoft.engine.bpm.bar.BarResource;
 import org.bonitasoft.engine.bpm.bar.BusinessArchiveBuilder;
 import org.bonitasoft.engine.bpm.process.InvalidProcessDefinitionException;
+import org.bonitasoft.engine.bpm.process.ProcessActivationException;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
 import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.expression.Expression;
@@ -39,9 +39,20 @@ import org.bonitasoft.test.toolkit.organization.TestUser;
 
 /**
  * @author Vincent Elcrin
- * 
  */
 public class TestProcessFactory {
+
+    public static final String CONTRACT_RULE_EXPLANATION = "explanation";
+
+    public static final String CONTRACT_RULE_EXPRESSION = " 1 == 1 ";
+
+    public static final String CONTRACT_RULE_NAME = "ruleName";
+
+    public static final String CONTRACT_INPUT_DESCRIPTION = "description";
+
+    public static final String CONTRACT_INPUT_TYPE = String.class.getName();
+
+    public static final String CONTRACT_INPUT_NAME = "inputName";
 
     protected static final String DEFAULT_HUMAN_TASK_PROCESS_NAME = "Default human task process";
 
@@ -59,7 +70,7 @@ public class TestProcessFactory {
      * Default Constructor.
      */
     public TestProcessFactory() {
-        this.processList = new HashMap<String, TestProcess>();
+        processList = new HashMap<String, TestProcess>();
     }
 
     public static TestProcessFactory getInstance() {
@@ -73,15 +84,18 @@ public class TestProcessFactory {
         return String.valueOf(new Random().nextLong());
     }
 
-    public void clear() {
-        this.processList.clear();
+    public void clear() throws Exception {
+        for (TestProcess testProcess : processList.values()) {
+            clear(testProcess);
+        }
+        processList.clear();
     }
 
     /**
      * @return the processList
      */
     protected Map<String, TestProcess> getProcessList() {
-        return this.processList;
+        return processList;
     }
 
     // ///////////////////////////////////////////////////////////////////////////////////
@@ -92,11 +106,10 @@ public class TestProcessFactory {
         return getDefaultProcessDefinitionBuilder(processName, "1.0");
     }
 
-    public static ProcessDefinitionBuilder getDefaultProcessDefinitionBuilder(final String processName, String version) {
+    public static ProcessDefinitionBuilder getDefaultProcessDefinitionBuilder(final String processName, final String version) {
         final ProcessDefinitionBuilder processDefinitionBuidler = new ProcessDefinitionBuilder().createNewInstance(processName, version);
         processDefinitionBuidler.addActor("Employees", true)
                 .addDescription("This a default process")
-
                 .addStartEvent("Start")
                 .addUserTask("Activity 1", "Employees")
                 .addEndEvent("Finish");
@@ -113,7 +126,7 @@ public class TestProcessFactory {
                     .addUserTask("Activity 1", "Employees")
                     .addData("FailedData", "FailedClassName", new ExpressionBuilder().createInputExpression("input", Boolean.class.getName()))
                     .addEndEvent("Finish");
-        } catch (InvalidExpressionException e) {
+        } catch (final InvalidExpressionException e) {
             throw new TestToolkitException("Invalid expression definition", e);
         }
         return processDefinitionBuidler;
@@ -130,9 +143,10 @@ public class TestProcessFactory {
 
         try {
             return new BusinessArchiveBuilder().createNewBusinessArchive()
+                    .setFormMappings(TestProcess.createDefaultProcessFormMapping(processDefinitionBuidler.getProcess()))
                     .addDocumentResource(new BarResource("attachedfile.txt", "thisisthecontentofthedocumentattached".getBytes()))
                     .setProcessDefinition(processDefinitionBuidler.done());
-        } catch (InvalidProcessDefinitionException e) {
+        } catch (final InvalidProcessDefinitionException e) {
             throw new TestToolkitException("Invalid process definition", e);
         }
     }
@@ -141,7 +155,7 @@ public class TestProcessFactory {
      * @param processCallActivty
      * @return
      */
-    private static ProcessDefinitionBuilder getCallActivityProcessDefinitionBuilder(ProcessDefinition processToStartViaCallActivity) {
+    private static ProcessDefinitionBuilder getCallActivityProcessDefinitionBuilder(final ProcessDefinition processToStartViaCallActivity) {
         Expression expressionName = null;
         Expression expressionVersion = null;
         try {
@@ -154,7 +168,7 @@ public class TestProcessFactory {
                     .setExpressionType(ExpressionType.TYPE_CONSTANT)
                     .setReturnType(String.class.getName())
                     .setContent(processToStartViaCallActivity.getVersion()).done();
-        } catch (InvalidExpressionException e) {
+        } catch (final InvalidExpressionException e) {
             throw new TestToolkitException("Invalid expression definition", e);
         }
 
@@ -171,32 +185,60 @@ public class TestProcessFactory {
     // / Factory accessors
     // //////////////////////////////////////////////////////////////////////////////////
 
-    public static TestProcess createRandomResolvedProcess(TestUser actor) {
+    public static TestProcess createRandomResolvedProcess(final TestUser actor) {
         return getRandomHumanTaskProcess().addActor(actor);
     }
 
     /**
+     * Variables :
+     * - variable1 : String
+     * - variable2 : Long
+     * - variable3 : Date
+     * @param initiator
+     */
+    public static TestHumanTask createActivityWithVariables(TestUser initiator) throws InvalidExpressionException {
+        final String processName = "processName";
+        final ProcessDefinitionBuilder processDefinitionBuidler = new ProcessDefinitionBuilder().createNewInstance(processName, "1.0");
+        processDefinitionBuidler.addActor("Employees", true)
+                .addDescription("This a default process")
+                .addStartEvent("Start")
+                .addUserTask("Activity 1", "Employees")
+
+                .addData("variable1", String.class.getName(), new ExpressionBuilder().createConstantStringExpression("defaultValue"))
+                .addData("variable2", Long.class.getName(), new ExpressionBuilder().createConstantLongExpression(1))
+                .addData("variable3", Date.class.getName(), new ExpressionBuilder().createConstantDateExpression("428558400000"))
+
+                .addEndEvent("Finish");
+        final TestProcess testProcess = new TestProcess(processDefinitionBuidler);
+        getInstance().getProcessList().put(processName, testProcess);
+        return testProcess.addActor(initiator).setEnable(true).startCase().getNextHumanTask().assignTo(initiator);
+    }
+
+    /**
      * This process contains only a human task
-     * 
+     *
      * @return
      */
     public static TestProcess getDefaultHumanTaskProcess() {
         return getHumanTaskProcess(DEFAULT_HUMAN_TASK_PROCESS_NAME);
     }
 
-    public static TestProcess createProcessWithConnector(TestProcessConnector testConnector) {
-        ProcessDefinitionBuilder processBuilder = getDefaultProcessDefinitionBuilder("aProcessWithConnector");
+    public static TestProcess createProcessWithConnector(final TestProcessConnector testConnector) {
+        final String aProcessWithConnector = "aProcessWithConnector";
+        final ProcessDefinitionBuilder processBuilder = getDefaultProcessDefinitionBuilder(aProcessWithConnector);
         processBuilder.addConnector(testConnector.getName(), testConnector.getId(), testConnector.getVersion(), testConnector.getConnectorEvent());
 
         try {
-            InputStream stream = TestProcessFactory.class.getResourceAsStream(testConnector.getResourceFilePath());
-            BarResource connectorResource = new BarResource(testConnector.getResourceFileName(), IOUtils.toByteArray(stream));
+            final InputStream stream = TestProcessFactory.class.getResourceAsStream(testConnector.getResourceFilePath());
+            final BarResource connectorResource = new BarResource(testConnector.getResourceFileName(), IOUtils.toByteArray(stream));
             stream.close();
-            BusinessArchiveBuilder barBuilder =
+            final BusinessArchiveBuilder barBuilder =
                     new BusinessArchiveBuilder().createNewBusinessArchive().setProcessDefinition(processBuilder.done());
             barBuilder.addConnectorImplementation(connectorResource);
-            return new TestProcess(barBuilder);
-        } catch (Exception e) {
+            final TestProcess testProcess = new TestProcess(barBuilder);
+            getInstance().getProcessList().put(aProcessWithConnector, testProcess);
+            return testProcess;
+        } catch (final Exception e) {
             throw new TestToolkitException("Unable to create a process with connector", e);
         }
     }
@@ -219,17 +261,22 @@ public class TestProcessFactory {
     }
 
     public static TestProcess createProcessWith3Actors() {
-        ProcessDefinitionBuilder builder = getDefaultProcessDefinitionBuilder("processWith3Actors");
+        final String processWith3Actors = "processWith3Actors";
+        final ProcessDefinitionBuilder builder = getDefaultProcessDefinitionBuilder(processWith3Actors);
         builder.addActor("actor2").addDescription("description actor2").addActor("actor3").addDescription("description actor3");
-        return new TestProcess(builder);
+        final TestProcess testProcess = new TestProcess(builder);
+        getInstance().getProcessList().put(processWith3Actors, testProcess);
+        return testProcess;
     }
 
-    public static TestProcess createProcessWithVariables(String processName, ProcessVariable... variables) {
-        ProcessDefinitionBuilder builder = getDefaultProcessDefinitionBuilder(processName);
-        for (ProcessVariable variable : variables) {
+    public static TestProcess createProcessWithVariables(final String processName, final ProcessVariable... variables) {
+        final ProcessDefinitionBuilder builder = getDefaultProcessDefinitionBuilder(processName);
+        for (final ProcessVariable variable : variables) {
             builder.addData(variable.getName(), variable.getClassName(), variable.getDefaultValue());
         }
-        return new TestProcess(builder);
+        final TestProcess testProcess = new TestProcess(builder);
+        getInstance().getProcessList().put(processName, testProcess);
+        return testProcess;
     }
 
     public static TestProcess getRandomHumanTaskProcess() {
@@ -238,10 +285,10 @@ public class TestProcessFactory {
 
     /**
      * This process contains only a human task
-     * 
+     *
      * @return
      */
-    public static TestProcess getHumanTaskProcess(final String processName, String version) {
+    public static TestProcess getHumanTaskProcess(final String processName, final String version) {
         if (getInstance().getProcessList().get(processName) == null) {
             final TestProcess testProcess = new TestProcess(getDefaultProcessDefinitionBuilder(processName, version));
             getInstance().getProcessList().put(processName, testProcess);
@@ -252,7 +299,7 @@ public class TestProcessFactory {
 
     /**
      * This process contains only a human task
-     * 
+     *
      * @return
      */
     public static TestProcess getHumanTaskProcess(final String processName) {
@@ -266,7 +313,7 @@ public class TestProcessFactory {
 
     /**
      * This process contains only a human task
-     * 
+     *
      * @return
      */
     public static TestProcess getMisconfiguredProcess() {
@@ -280,10 +327,10 @@ public class TestProcessFactory {
 
     /**
      * This process contains a call activity
-     * 
+     *
      * @return
      */
-    public static TestProcess getCallActivityProcess(ProcessDefinition processToStartViaCallActivity) {
+    public static TestProcess getCallActivityProcess(final ProcessDefinition processToStartViaCallActivity) {
         if (getInstance().getProcessList().get(PROCESS_CALL_ACTIVTY) == null) {
             final TestProcess testProcess = new TestProcess(getCallActivityProcessDefinitionBuilder(processToStartViaCallActivity));
             getInstance().getProcessList().put(PROCESS_CALL_ACTIVTY, testProcess);
@@ -291,4 +338,35 @@ public class TestProcessFactory {
         return getInstance().getProcessList().get(PROCESS_CALL_ACTIVTY);
     }
 
+    public void check() {
+        if (!getProcessList().isEmpty()) {
+            throw new RuntimeException(this.getClass().getName() + " cannot be reset because the list is not empty: " + getProcessList());
+        }
+    }
+
+    private void clear(TestProcess testProcess) throws Exception {
+        testProcess.deleteCases();
+        try {
+            testProcess.disable();
+        } catch (TestToolkitException e) {
+            if (!(e.getCause() instanceof ProcessActivationException)) {
+                throw e;
+            }
+            //ignore as the process can be disabled
+        }
+        testProcess.delete();
+    }
+
+    public void delete(TestProcess testProcess) throws Exception {
+        clear(testProcess);
+        getProcessList().remove(testProcess.getProcessDefinition().getName());
+    }
+
+    public void remove(TestProcess testProcess) {
+        getProcessList().remove(testProcess.getProcessDefinition().getName());
+    }
+
+    public void add(TestProcess testProcess) {
+        getProcessList().put(testProcess.getProcessDefinition().getName(), testProcess);
+    }
 }

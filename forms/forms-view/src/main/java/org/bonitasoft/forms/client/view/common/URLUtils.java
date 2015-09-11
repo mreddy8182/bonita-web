@@ -16,7 +16,6 @@
  */
 package org.bonitasoft.forms.client.view.common;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -38,6 +37,12 @@ import com.google.gwt.user.client.Window;
  * @author Anthony Birembaut
  */
 public class URLUtils {
+
+    private static final String PAGE_ID_SEPARATOR = "/content/";
+
+    private static final String FORM_ID_PREFIX = "taskInstance/";
+
+    private static final String PAGE_SERVLET_NAME = "resource/";
 
     /**
      * Generic forms app path
@@ -78,6 +83,11 @@ public class URLUtils {
      * recap mode : indicates if the required instance page flow has to be displayed in recap mode
      */
     public static final String RECAP_PARAM = "recap";
+
+    /**
+     * User Id param : for submitting forms on behalf
+     */
+    public static final String USER_ID_PARAM = "user";
 
     /**
      * todolist mode : if true, get one task of a given process or process instance among your todolist
@@ -506,31 +516,31 @@ public class URLUtils {
     }
 
     /**
-     * @param applicationURL
      * @param urlContext
      * @return
      */
-    public String getFormRedirectionUrl(final String applicationURL, final Map<String, Object> urlContext) {
-        final StringBuilder url = new StringBuilder(applicationURL);
-        if (applicationURL.contains("?")) {
-            url.append("&");
-        } else {
-            url.append("?");
-        }
+    public String getFormRedirectionUrl(final Map<String, Object> urlContext) {
+        final StringBuilder url = new StringBuilder(PAGE_SERVLET_NAME);
+        url.append(FORM_ID_PREFIX);
+        url.append(urlContext.get(URLUtils.FORM_ID));
+        url.append(PAGE_ID_SEPARATOR);
+        url.append("?id=");
+        url.append(urlContext.get(URLUtils.TASK_ID_PARAM));
+        url.append("&");
         url.append(URLUtils.LOCALE_PARAM);
         url.append("=");
         url.append(getLocale());
-        url.append("#");
-        final Iterator<Entry<String, Object>> it = urlContext.entrySet().iterator();
-        final int size = urlContext.size();
-        for (int i = 0; i < size; i++) {
-            final Entry<String, Object> entry = it.next();
-            final String key = entry.getKey();
-            final String value = entry.getValue().toString();
-            url.append(key + "=" + URL.encodeQueryString(value));
-            if (i < size - 1) {
-                url.append("&");
-            }
+        if (urlContext.containsKey(URLUtils.USER_ID_PARAM)) {
+            url.append("&");
+            url.append(URLUtils.USER_ID_PARAM);
+            url.append("=");
+            url.append(urlContext.get(URLUtils.USER_ID_PARAM));
+        }
+        if (urlContext.containsKey(URLUtils.VIEW_MODE_PARAM)) {
+            url.append("&");
+            url.append(URLUtils.VIEW_MODE_PARAM);
+            url.append("=");
+            url.append(urlContext.get(URLUtils.VIEW_MODE_PARAM));
         }
         return url.toString();
     }
@@ -555,8 +565,7 @@ public class URLUtils {
         return hashBuilder.toString();
     }
 
-    public String buildLayoutURL(final String bodyContentId, final String formID, final String taskId, final boolean isPageLayout)
-            throws UnsupportedEncodingException {
+    public String buildLayoutURL(final String bodyContentId, final String formID, final String taskId, final boolean isPageLayout) {
         final StringBuffer theURL = new StringBuffer(GWT.getModuleBaseURL()).append(FORM_LAYOUT_DOWNLOAD);
         if (bodyContentId != null) {
             theURL.append("?" + BODY_CONTENT_ID + "=").append(URL.encodeQueryString(bodyContentId));

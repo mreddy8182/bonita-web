@@ -13,10 +13,12 @@
  ******************************************************************************/
 package org.bonitasoft.console.client.angular;
 
-import static org.bonitasoft.web.toolkit.client.common.util.StringUtil.*;
+import static org.bonitasoft.web.toolkit.client.common.util.StringUtil.isBlank;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bonitasoft.console.client.user.cases.view.IFrameView;
 import org.bonitasoft.web.toolkit.client.common.TreeIndexed;
@@ -27,8 +29,6 @@ import org.bonitasoft.web.toolkit.client.eventbus.events.MenuClickHandler;
 import org.bonitasoft.web.toolkit.client.ui.RawView;
 import org.bonitasoft.web.toolkit.client.ui.component.core.UiComponent;
 
-import com.google.gwt.regexp.shared.MatchResult;
-import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
@@ -37,7 +37,13 @@ import com.google.gwt.user.client.ui.SimplePanel;
  */
 public class AngularIFrameView extends RawView {
 
+    public static final String CASE_LISTING_TOKEN = "caselistinguser";
+
     public static final String CASE_LISTING_ADMIN_TOKEN = "caselistingadmin";
+
+    public static final String APPLICATION_LISTING_PAGE = "applicationslistingadmin";
+
+    public static final String PROCESS_MORE_DETAILS_ADMIN_TOKEN = "processmoredetailsadmin";
 
     public static final String CASE_LISTING_ARCHIVED_TAB = "archived";
 
@@ -45,15 +51,46 @@ public class AngularIFrameView extends RawView {
 
     public static final String CASE_LISTING_PROCESS_ID_TOKEN = "processId";
 
-    protected static final List<String> ANGULAR_TOKENS = Arrays.asList(CASE_LISTING_ADMIN_TOKEN);
-
     private final IFrameView iframe = new IFrameView();
+
+    protected final static Map<String, List<String>> acceptedToken = initAcceptedTokens();
 
     private String url;
 
     private String token;
 
+    public static Map<String, String> angularViewsMap = new HashMap<String, String>();
+
+    /**
+     * add a route support to angular
+     *
+     * @param token the gwt token to match
+     * @param route the matching angular route
+     */
+    public static void addTokenSupport(final String token, final String route) {
+        angularViewsMap.put(token, route);
+    }
+
+    /**
+     * get route associated to given token when it exists, null otherwise
+     * 
+     * @param token the token to get the route from
+     * @return the route
+     */
+    public static String getRoute(final String token) {
+        return angularViewsMap.get(token);
+    }
+
+    /**
+     * @param token2
+     * @return
+     */
+    public static boolean supportsToken(final String token) {
+        return angularViewsMap.containsKey(token);
+    }
+
     public AngularIFrameView() {
+
         MainEventBus.getInstance().addHandler(MenuClickEvent.TYPE, new MenuClickHandler() {
 
             @Override
@@ -63,6 +100,15 @@ public class AngularIFrameView extends RawView {
                 updateHash(angularParameterCleaner.getHashWithoutAngularParameters());
             }
         });
+    }
+
+    /**
+     * @return
+     */
+    private static Map<String, List<String>> initAcceptedTokens() {
+        final Map<String, List<String>> results = new HashMap<String, List<String>>();
+        results.put(PROCESS_MORE_DETAILS_ADMIN_TOKEN, Arrays.asList("id", "tab"));
+        return results;
     }
 
     public native String getHash() /*-{
@@ -113,10 +159,15 @@ public class AngularIFrameView extends RawView {
      * @return the angular url to access for the given token
      */
     protected String buildAngularUrl(final String url, final String token, final String queryString) {
-        return new AngularUrlBuilder(url)
+        final AngularUrlBuilder angularUrlBuilder = new AngularUrlBuilder(url)
         .appendQueryStringParameter(token + "_id", queryString + "&" + getHash())
-        .appendQueryStringParameter(token + "_tab", queryString + "&" + getHash())
-        .build() + (isBlank(queryString) ? "" : "?" + queryString.replaceAll(token + '_', ""));
+        .appendQueryStringParameter(token + "_tab", queryString + "&" + getHash());
+        if (acceptedToken.containsKey(token)) {
+            for (final String param : acceptedToken.get(token)) {
+                angularUrlBuilder.appendQueryStringParameter(param, queryString + "&" + getHash());
+            }
+        }
+        return angularUrlBuilder.build() + (isBlank(queryString) ? "" : "?" + queryString.replaceAll(token + '_', ""));
     }
 
     /**
@@ -129,17 +180,5 @@ public class AngularIFrameView extends RawView {
 
     public void display(final TreeIndexed<String> params) {
         iframe.setLocation(buildAngularUrl(url, token, UrlSerializer.serialize(params)));
-    }
-
-    /**
-     * @param tokens
-     * @return
-     */
-    public boolean isFormerTokenAnAngularFrame(final String tokens) {
-        final MatchResult paramMatcher = RegExp.compile("(^|[&\\?#])_p=([^&\\?#]*)([&\\?#]|$)").exec(tokens);
-        if (paramMatcher != null && paramMatcher.getGroupCount() > 0) {
-            return ANGULAR_TOKENS.contains(paramMatcher.getGroup(2));
-        }
-        return false;
     }
 }

@@ -23,10 +23,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.bonitasoft.forms.client.i18n.FormsResourceBundle;
 import org.bonitasoft.forms.client.model.FormFieldValue;
@@ -63,9 +65,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Frame;
@@ -152,7 +156,7 @@ public class FormPagesViewController {
     /**
      * Map of form fields already displayed in the page flow
      */
-    protected Map<String, FormFieldWidget> fieldWidgets = new HashMap<String, FormFieldWidget>();
+    protected Map<String, FormFieldWidget> fieldWidgets = new TreeMap<String, FormFieldWidget>();
 
     /**
      * Map of form buttons already displayed in the page flow
@@ -214,6 +218,20 @@ public class FormPagesViewController {
      * The map of URL parameters
      */
     protected Map<String, Object> urlContext;
+
+    /**
+     * Widget type to focused when loading is hidden
+     *
+     */
+    protected List<WidgetType> widgetTypesToFocus = Arrays.asList(
+            WidgetType.TEXTAREA,
+            WidgetType.TEXTBOX,
+            WidgetType.SUGGESTBOX,
+            WidgetType.RICH_TEXTAREA,
+            WidgetType.SUGGESTBOX_ASYNC,
+            WidgetType.PASSWORD,
+            WidgetType.FILEUPLOAD
+            );
 
     /**
      * Constructor
@@ -310,8 +328,8 @@ public class FormPagesViewController {
                     }
                 });
                 theRequestBuilder.send();
-            } catch (final Exception e) {
-                Window.alert("Error while trying to query the form layout :" + e.getMessage());
+            } catch (final RequestException e) {
+                GWT.log("Error while trying to query the form layout :" + e.getMessage());
             }
 
         }
@@ -391,9 +409,34 @@ public class FormPagesViewController {
             buildViewMode(pageHTMLPanel, formPage, hasAlreadyBeenDisplayed, isNextPage, onloadAttributeValue);
         }
         domUtils.overrideBrowserNativeInputs();
+        resizeFrame();
         domUtils.hideLoading();
+        focusFirstField();
 
     }
+
+    /**
+     * Focus the first field "focusable"
+     */
+    protected void focusFirstField() {
+        final Iterator<Entry<String, FormFieldWidget>> fieldWidgestIterator = fieldWidgets.entrySet().iterator();
+
+        boolean focused = false;
+        while (fieldWidgestIterator.hasNext() && !focused) {
+            final Entry<String, FormFieldWidget> reducedFormWidget = fieldWidgestIterator.next();
+            final FormFieldWidget formFieldWidget = reducedFormWidget.getValue();
+            if (formFieldWidget != null && widgetTypesToFocus.contains(formFieldWidget.getType())) {
+                if (formFieldWidget.getType().equals(WidgetType.RICH_TEXTAREA)) {
+                    formFieldWidget.getElement().focus();
+                } else {
+                    formFieldWidget.setFocusOn();
+                }
+                focused = true;
+            }
+        }
+
+    }
+
 
     /**
      * Insert the widgets in the page for the view mode
@@ -615,7 +658,7 @@ public class FormPagesViewController {
                 pageHTMLPanel.add(widget, widgetParentElement);
                 widgetParentElement.addClassName(widgetStyle);
             } else {
-                Window.alert("An element with id " + formWidgetData.getId() + " is missing from the page template.");
+                GWT.log("An element with id " + formWidgetData.getId() + " is missing from the page template.");
             }
         }
     }
@@ -891,6 +934,7 @@ public class FormPagesViewController {
         }
         if (hideLoader) {
             domUtils.hideLoading();
+            focusFirstField();
         }
     }
 
@@ -1140,7 +1184,7 @@ public class FormPagesViewController {
                         if (validatorElement != null) {
                             DOM.appendChild(validatorElement, formValidationMessageWidget.getElement());
                         } else {
-                            Window.alert("An element with id " + validatorId + " is missing from the page template.");
+                            GWT.log("An element with id " + validatorId + " is missing from the page template.");
                         }
                     }
                 }
@@ -1200,7 +1244,7 @@ public class FormPagesViewController {
                     if (RootPanel.get(validatorId) != null) {
                         RootPanel.get(validatorId).add(formValidationMessageWidget);
                     } else {
-                        Window.alert("An element with id " + validatorId + " is missing from the page template.");
+                        GWT.log("An element with id " + validatorId + " is missing from the page template.");
                     }
                 }
                 enableButtons(true);
@@ -1307,6 +1351,21 @@ public class FormPagesViewController {
 
             enableButtons(true);
         }
+    }
+
+     /**
+     * If the page is contained in a form, resize the frame to fit the page height
+     */
+    protected void resizeFrame() {
+
+        final Timer timer = new Timer() {
+            @Override
+            public void run() {
+                if (domUtils.isPageInFrame()) {
+               }
+            }
+        };
+        timer.schedule(300);
     }
 
     public void setMandatoryFieldSymbol(final String mandatoryFieldSymbol) {

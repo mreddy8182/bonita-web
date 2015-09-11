@@ -1,11 +1,17 @@
-/*******************************************************************************
+/**
  * Copyright (C) 2014 BonitaSoft S.A.
- * BonitaSoft is a trademark of BonitaSoft SA.
- * This software file is BONITASOFT CONFIDENTIAL. Not For Distribution.
- * For commercial licensing information, contact:
- * BonitaSoft, 32 rue Gustave Eiffel – 38000 Grenoble
- * or BonitaSoft US, 51 Federal Street, Suite 305, San Francisco, CA 94107
- *******************************************************************************/
+ * BonitaSoft, 32 rue Gustave Eiffel - 38000 Grenoble
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2.0 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.bonitasoft.console.common.server.page;
 
 import java.io.File;
@@ -20,12 +26,14 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 import org.bonitasoft.console.common.server.preferences.constants.WebBonitaConstantsUtils;
+import org.bonitasoft.engine.api.PageAPI;
+import org.bonitasoft.engine.page.Page;
+import org.bonitasoft.engine.page.PageNotFoundException;
 
 /**
  * This class provide access to the resources contained in the custom page zip
- * 
+ *
  * @author Anthony Birembaut
- * 
  */
 public class PageResourceProvider {
 
@@ -35,8 +43,6 @@ public class PageResourceProvider {
     private static Logger LOGGER = Logger.getLogger(PageResourceProvider.class.getName());
 
     private static final String VERSION_FILENAME = "VERSION";
-
-    protected final static String PAGE_RESOURCE_SERVLET_NAME = "pageResource";
 
     protected final static String THEME_RESOURCE_SERVLET_NAME = "themeResource";
 
@@ -95,9 +101,12 @@ public class PageResourceProvider {
      */
     protected final static String THEME_PARAM = "theme";
 
+    private final String fullPageName;
+
     protected long tenantId;
 
     protected String pageName;
+
 
     protected File pageDirectory;
 
@@ -107,37 +116,57 @@ public class PageResourceProvider {
 
     private final File pageTempFile;
 
+    private final Long pageId;
+
     protected PageResourceProvider(final String pageName, final long tenantId) {
+        this(pageName, tenantId, null, null);
+    }
+
+    protected PageResourceProvider(final Page page, final long tenantId) {
+        this(page.getName(), tenantId, page.getId(), page.getProcessDefinitionId());
+    }
+
+    private PageResourceProvider(final String pageName, final long tenantId, final Long pageId, final Long processDefinitionId) {
         this.tenantId = tenantId;
         this.pageName = pageName;
-        pageDirectory = buildPageDirectory(pageName, tenantId);
-        pageTempDirectory = buildPageTempDirectory(pageName, tenantId);
-        pageTempFile = buildPageTempFile(pageName, tenantId);
+        this.pageId = pageId;
+        fullPageName = buildFullPageName(pageName, processDefinitionId);
+        pageDirectory = buildPageDirectory(fullPageName, tenantId);
+        pageTempDirectory = buildPageTempDirectory(fullPageName, tenantId);
+        pageTempFile = buildPageTempFile(fullPageName, tenantId);
     }
 
-    protected File buildPageTempDirectory(final String pageName, final long tenantId) {
-        return new File(WebBonitaConstantsUtils.getInstance(tenantId).getTempFolder(), pageName);
+    private String buildFullPageName(final String pageName, final Long processDefinitionId) {
+        final StringBuilder builder = new StringBuilder();
+        if (processDefinitionId != null) {
+            builder.append("p").append(processDefinitionId).append("_");
+        }
+        builder.append(pageName);
+        return builder.toString();
     }
 
-    protected File buildPageTempFile(final String pageName, final long tenantId) {
-        return new File(WebBonitaConstantsUtils.getInstance(tenantId).getTempFolder(), pageName + ".zip");
+    protected File buildPageTempDirectory(final String fullPageName, final long tenantId) {
+        return new File(WebBonitaConstantsUtils.getInstance(tenantId).getTempFolder(), fullPageName);
     }
 
-    protected File buildPageDirectory(final String pageName, final long tenantId) {
-        return new File(WebBonitaConstantsUtils.getInstance(tenantId).getPagesFolder(), pageName);
+    protected File buildPageTempFile(final String fullPageName, final long tenantId) {
+        return new File(WebBonitaConstantsUtils.getInstance(tenantId).getTempFolder(), new StringBuilder().append(fullPageName).append(".zip").toString());
+    }
+
+    protected File buildPageDirectory(final String fullPageName, final long tenantId) {
+        return new File(WebBonitaConstantsUtils.getInstance(tenantId).getPagesFolder(), fullPageName);
     }
 
     public InputStream getResourceAsStream(final String resourceName) throws FileNotFoundException {
         return new FileInputStream(getResourceAsFile(resourceName));
     }
 
-    protected File getResourceAsFile(final String resourceName) {
+    public File getResourceAsFile(final String resourceName) {
         return new File(pageDirectory, resourceName);
     }
 
     public String getResourceURL(final String resourceName) {
-        return new StringBuilder(PAGE_RESOURCE_SERVLET_NAME).append("?").append(TENANT_PARAM).append("=").append(tenantId).append("&").append(PAGE_PARAM)
-                .append("=").append(pageName).append("&").append(LOCATION_PARAM).append("=").append(resourceName).append("&").append(VERSION_PARAM).append("=")
+        return new StringBuilder(resourceName).append("?").append(TENANT_PARAM).append("=").append(tenantId).append("&").append(VERSION_PARAM).append("=")
                 .append(productVersion).toString();
     }
 
@@ -147,7 +176,7 @@ public class PageResourceProvider {
                 .append(VERSION_PARAM).append("=").append(productVersion).toString();
     }
 
-    protected File getPageDirectory() {
+    public File getPageDirectory() {
         return pageDirectory;
     }
 
@@ -167,4 +196,18 @@ public class PageResourceProvider {
         return ResourceBundle.getBundle(name, locale, resourceClassLoader);
     }
 
+    public String getPageName() {
+        return pageName;
+    }
+
+    public Page getPage(final PageAPI pageAPI) throws PageNotFoundException {
+        if (pageId != null) {
+            return pageAPI.getPage(pageId);
+        }
+        return pageAPI.getPageByName(getPageName());
+    }
+
+    public String getFullPageName() {
+        return fullPageName;
+    }
 }

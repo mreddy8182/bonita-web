@@ -16,6 +16,7 @@ package org.bonitasoft.console.common.server.login.filter;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -27,11 +28,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
-import org.bonitasoft.console.common.server.login.LoginManager;
 import org.bonitasoft.console.common.server.preferences.properties.DynamicPermissionsChecks;
 import org.bonitasoft.console.common.server.preferences.properties.PropertiesFactory;
 import org.bonitasoft.console.common.server.preferences.properties.ResourcesPermissionsMapping;
 import org.bonitasoft.console.common.server.utils.PermissionsBuilder;
+import org.bonitasoft.console.common.server.utils.SessionUtil;
 import org.bonitasoft.engine.api.PermissionAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.api.permission.APICallContext;
@@ -55,7 +56,7 @@ public class RestAPIAuthorizationFilter extends AbstractAuthorizationFilter {
 
     public static final String SCRIPT_TYPE_AUTHORIZATION_PREFIX = "check";
 
-    private static final String PLATFORM_API_URI = "API/platform/";
+    private static final String PLATFORM_API_URI_REGEXP = ".*(API|APIToolkit)/platform/.*";
 
     protected static final String PLATFORM_SESSION_PARAM_KEY = "platformSession";
     private final Boolean reload;
@@ -78,7 +79,7 @@ public class RestAPIAuthorizationFilter extends AbstractAuthorizationFilter {
     @Override
     protected boolean checkValidCondition(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse) throws ServletException {
         try {
-            if (httpRequest.getRequestURI().contains(PLATFORM_API_URI)) {
+            if (httpRequest.getRequestURI().matches(PLATFORM_API_URI_REGEXP)) {
                 return platformAPIsCheck(httpRequest, httpResponse);
             } else {
                 return tenantAPIsCheck(httpRequest, httpResponse);
@@ -92,7 +93,7 @@ public class RestAPIAuthorizationFilter extends AbstractAuthorizationFilter {
     }
 
     protected boolean tenantAPIsCheck(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse) throws ServletException {
-        final APISession apiSession = (APISession) httpRequest.getSession().getAttribute(LoginManager.API_SESSION_PARAM_KEY);
+        final APISession apiSession = (APISession) httpRequest.getSession().getAttribute(SessionUtil.API_SESSION_PARAM_KEY);
         if (apiSession == null) {
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
@@ -116,44 +117,51 @@ public class RestAPIAuthorizationFilter extends AbstractAuthorizationFilter {
 
     protected boolean checkPermissions(final HttpServletRequest request) throws ServletException {
         final RestRequestParser restRequestParser = new RestRequestParser(request).invoke();
-        return checkPermissions(request, restRequestParser.getApiName(), restRequestParser.getResourceName(), restRequestParser.getId());
+        return checkPermissions(request, restRequestParser.getApiName(), restRequestParser.getResourceName(), restRequestParser.getResourceQualifiers());
     }
 
-    protected boolean checkPermissions(final HttpServletRequest request, final String apiName, final String resourceName, final APIID id)
+    protected boolean checkPermissions(final HttpServletRequest request, final String apiName, final String resourceName, final APIID resourceQualifiers)
             throws ServletException {
         final String method = request.getMethod();
         final HttpSession session = request.getSession();
         @SuppressWarnings("unchecked")
-        final Set<String> userPermissions = (Set<String>) session.getAttribute(LoginManager.PERMISSIONS_SESSION_PARAM_KEY);
-        final APISession apiSession = (APISession) session.getAttribute(LoginManager.API_SESSION_PARAM_KEY);
+        final Set<String> userPermissions = (Set<String>) session.getAttribute(SessionUtil.PERMISSIONS_SESSION_PARAM_KEY);
+        final APISession apiSession = (APISession) session.getAttribute(SessionUtil.API_SESSION_PARAM_KEY);
         final Long tenantId = apiSession.getTenantId();
         final boolean apiAuthorizationsCheckEnabled = isApiAuthorizationsCheckEnabled(tenantId);
         if (!apiAuthorizationsCheckEnabled || apiSession.isTechnicalUser()) {
             return true;
         }
-        final ResourcesPermissionsMapping resourcesPermissionsMapping = getResourcesPermissionsMapping(tenantId);
-        final String resourceId = id != null ? id.toString() : null;
+        final String resourceQualifiersAsString = resourceQualifiers != null ? resourceQualifiers.toString() : null;
 
         final DynamicPermissionsChecks dynamicPermissionsChecks = getDynamicPermissionsChecks(tenantId);
-
-        final Set<String> resourceAuthorizations = getDynamicAuthorizations(apiName, resourceName, method, resourceId, dynamicPermissionsChecks);
+        final Set<String> resourceAuthorizations = getDeclaredPermissions(apiName, resourceName, method, resourceQualifiers, dynamicPermissionsChecks);
         if (!resourceAuthorizations.isEmpty()) {
             //if there is a dynamic rule, use it to check the permissions
             final String requestBody = getRequestBody(request);
-            final APICallContext apiCallContext = new APICallContext(method, apiName, resourceName, resourceId, request.getQueryString(), requestBody);
+            final APICallContext apiCallContext = new APICallContext(method, apiName, resourceName, resourceQualifiersAsString, request.getQueryString(), requestBody);
             return dynamicCheck(apiCallContext, userPermissions, resourceAuthorizations, apiSession);
         } else {
             //if there is no dynamic rule, use the static permissions
-            final APICallContext apiCallContext = new APICallContext(method, apiName, resourceName, resourceId);
-            return staticCheck(apiCallContext, userPermissions, resourcesPermissionsMapping, apiSession.getUserName());
+            final ResourcesPermissionsMapping resourcesPermissionsMapping = getResourcesPermissionsMapping(tenantId);
+            final Set<String> resourcePermissions = getDeclaredPermissions(apiName, resourceName, method, resourceQualifiers, resourcesPermissionsMapping);
+            final APICallContext apiCallContext = new APICallContext(method, apiName, resourceName, resourceQualifiersAsString);
+            return staticCheck(apiCallContext, userPermissions, resourcePermissions, apiSession.getUserName());
         }
     }
 
-    protected Set<String> getDynamicAuthorizations(final String apiName, final String resourceName, final String method, final String resourceId,
-            final DynamicPermissionsChecks dynamicPermissionsChecks) {
-        Set<String> resourcePermissions = dynamicPermissionsChecks.getResourcePermissions(method, apiName, resourceName, resourceId);
+    protected Set<String> getDeclaredPermissions(final String apiName, final String resourceName, final String method, final APIID resourceQualifiers,
+            final ResourcesPermissionsMapping resourcesPermissionsMapping) {
+        List<String> resourceQualifiersIds = null;
+        if (resourceQualifiers != null) {
+            resourceQualifiersIds = resourceQualifiers.getIds();
+        }
+        Set<String> resourcePermissions = resourcesPermissionsMapping.getResourcePermissions(method, apiName, resourceName, resourceQualifiersIds);
         if (resourcePermissions.isEmpty()) {
-            resourcePermissions = dynamicPermissionsChecks.getResourcePermissions(method, apiName, resourceName);
+            resourcePermissions = resourcesPermissionsMapping.getResourcePermissionsWithWildCard(method, apiName, resourceName, resourceQualifiersIds);
+        }
+        if (resourcePermissions.isEmpty()) {
+            resourcePermissions = resourcesPermissionsMapping.getResourcePermissions(method, apiName, resourceName);
         }
         return resourcePermissions;
     }
@@ -180,13 +188,7 @@ public class RestAPIAuthorizationFilter extends AbstractAuthorizationFilter {
     }
 
     protected boolean staticCheck(final APICallContext apiCallContext, final Set<String> permissionsOfUser,
-            final ResourcesPermissionsMapping resourcesPermissionsMapping, final String username) {
-        Set<String> resourcePermissions = resourcesPermissionsMapping.getResourcePermissions(apiCallContext.getMethod(), apiCallContext.getApiName(),
-                apiCallContext.getResourceName(), apiCallContext.getResourceId());
-        if (resourcePermissions.isEmpty()) {
-            resourcePermissions = resourcesPermissionsMapping.getResourcePermissions(apiCallContext.getMethod(), apiCallContext.getApiName(),
-                    apiCallContext.getResourceName());
-        }
+            final Set<String> resourcePermissions, final String username) {
         for (final String resourcePermission : resourcePermissions) {
             if (permissionsOfUser.contains(resourcePermission)) {
                 return true;

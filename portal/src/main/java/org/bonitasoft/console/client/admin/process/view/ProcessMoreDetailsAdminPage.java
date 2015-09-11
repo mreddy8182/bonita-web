@@ -33,6 +33,8 @@ import org.bonitasoft.console.client.admin.process.view.section.category.Categor
 import org.bonitasoft.console.client.admin.process.view.section.configuration.ProcessConfigurationStateResolver;
 import org.bonitasoft.console.client.admin.process.view.section.connector.ConnectorSection;
 import org.bonitasoft.console.client.admin.process.view.section.entitymapping.EntityMappingSection;
+import org.bonitasoft.console.client.admin.process.view.section.parameter.ProcessParametersSection;
+import org.bonitasoft.console.client.angular.AngularIFrameView;
 import org.bonitasoft.console.client.common.metadata.ProcessMetadataBuilder;
 import org.bonitasoft.web.rest.model.bpm.process.ProcessDefinition;
 import org.bonitasoft.web.rest.model.bpm.process.ProcessItem;
@@ -57,12 +59,13 @@ import org.bonitasoft.web.toolkit.client.ui.page.ItemQuickDetailsPage.ItemQuickD
  */
 public class ProcessMoreDetailsAdminPage extends ItemQuickDetailsPage<ProcessItem> {
 
-    public static final String TOKEN = "processmoredetailsadmin";
+    public static final String TOKEN = "gwtprocessmoredetailsadmin";
 
     public static final List<String> PRIVILEGES = new ArrayList<String>();
 
     static {
         PRIVILEGES.add(ProcessListingAdminPage.TOKEN);
+        PRIVILEGES.add(AngularIFrameView.PROCESS_MORE_DETAILS_ADMIN_TOKEN);
         PRIVILEGES.add("reportlistingadminext");
     }
 
@@ -145,21 +148,21 @@ public class ProcessMoreDetailsAdminPage extends ItemQuickDetailsPage<ProcessIte
     @Override
     protected void buildBody(final ProcessItem item) {
         new APICaller(ProcessResolutionProblemDefinition.get())
-                .search(0, 100, null, null, asMap(new Arg(FILTER_PROCESS_ID, item.getId())), new ProcessResolutionProblemCallback(item));
+        .search(0, 100, null, null, asMap(new Arg(FILTER_PROCESS_ID, item.getId())), new ProcessResolutionProblemCallback(item));
     }
 
     private class ProcessResolutionProblemCallback extends APICallback {
 
         private final ProcessItem process;
 
-        public ProcessResolutionProblemCallback(ProcessItem process) {
+        public ProcessResolutionProblemCallback(final ProcessItem process) {
             this.process = process;
         }
 
         @Override
         public void onSuccess(final int httpStatusCode, final String response, final Map<String, String> headers) {
             final List<ProcessResolutionProblemItem> processResolutionErrors = JSonItemReader.parseItems(response, ProcessResolutionProblemDefinition.get());
-            ProcessConfigurationStateResolver stateResolver = new ProcessConfigurationStateResolver(processResolutionErrors);
+            final ProcessConfigurationStateResolver stateResolver = new ProcessConfigurationStateResolver(processResolutionErrors);
             if (stateResolver.hasProblems()) {
                 addHeader(buildProcessResolutionProblemsCallout(stateResolver));
             }
@@ -170,18 +173,19 @@ public class ProcessMoreDetailsAdminPage extends ItemQuickDetailsPage<ProcessIte
 
     protected void buildBody(final ProcessItem process, final ProcessConfigurationStateResolver stateResolver) {
         addBody(new EntityMappingSection(process, stateResolver.getActorsConfigurationState()));
+        addBody(new ProcessParametersSection(process, stateResolver.getParametersConfigurationState()));
         addBody(buildConnectorSection(process, stateResolver));
         addBody(new CategoriesSection(process));
         addBody(new CasesSection(process));
     }
 
     /** Overriden in SP */
-    protected ConnectorSection buildConnectorSection(ProcessItem process, ProcessConfigurationStateResolver stateResolver) {
+    protected ConnectorSection buildConnectorSection(final ProcessItem process, final ProcessConfigurationStateResolver stateResolver) {
         return new ConnectorSection(process, stateResolver.getConnectorsConfigurationState());
     }
 
     /** Overriden in SP */
-    protected ProcessResolutionProblemsCallout buildProcessResolutionProblemsCallout(ProcessConfigurationStateResolver stateResolver) {
+    protected ProcessResolutionProblemsCallout buildProcessResolutionProblemsCallout(final ProcessConfigurationStateResolver stateResolver) {
         return new ProcessResolutionProblemsCallout(stateResolver);
     }
 

@@ -24,6 +24,7 @@ import org.bonitasoft.web.rest.server.datastore.bpm.process.CategoryDatastore;
 import org.bonitasoft.web.toolkit.client.common.exception.api.APIException;
 import org.bonitasoft.web.toolkit.client.common.exception.api.APIForbiddenException;
 import org.bonitasoft.web.toolkit.client.data.APIID;
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -35,8 +36,8 @@ public class APICategoryIntegrationTest extends AbstractConsoleTest {
 
     @Override
     public void consoleTestSetUp() throws Exception {
-        this.api = new APICategory();
-        this.api.setCaller(getAPICaller(getInitiator().getSession(), "API/bpm/category"));
+        api = new APICategory();
+        api.setCaller(getAPICaller(getInitiator().getSession(), "API/bpm/category"));
     }
 
     @Override
@@ -44,15 +45,24 @@ public class APICategoryIntegrationTest extends AbstractConsoleTest {
         return TestUserFactory.getRidleyScott();
     }
 
+    @After
+    public void cleanCategoriesInDB() {
+        final List<TestCategory> allCategories = TestCategoryFactory.getAllCategories(getInitiator().getSession());
+        for (final TestCategory category : allCategories) {
+            TestCategoryFactory.removeTestCategoryFromList(category);
+            category.delete();
+        }
+    }
+
     /**
      * Fetch a Category by id from engine
-     * 
+     *
      * @return the category or null if not found
      */
-    private CategoryItem getFromEngine(long categoryId) {
+    private CategoryItem getFromEngine(final long categoryId) {
         try {
             return new CategoryDatastore(getInitiator().getSession()).get(makeAPIID(categoryId));
-        } catch (APIException e) {
+        } catch (final APIException e) {
             if (e.getCause() instanceof CategoryNotFoundException) {
                 return null;
             }
@@ -65,7 +75,7 @@ public class APICategoryIntegrationTest extends AbstractConsoleTest {
         final List<TestCategory> catList = TestCategoryFactory.getCategories(3);
 
         // Search the CommentItem
-        final List<CategoryItem> actualCatList = this.api.runSearch(0, 10, null, null, new HashMap<String, String>(), new ArrayList<String>(),
+        final List<CategoryItem> actualCatList = api.runSearch(0, 10, null, null, new HashMap<String, String>(), new ArrayList<String>(),
                 new ArrayList<String>()).getResults();
         Assert.assertNotNull("Categories not found", actualCatList);
         Assert.assertTrue(catList.size() == 3);
@@ -73,15 +83,22 @@ public class APICategoryIntegrationTest extends AbstractConsoleTest {
 
     @Test
     public void addCategoryTest() {
+        //before
+
         // API call
         final CategoryItem categoryItem = new CategoryItem();
         categoryItem.setName("categoryTest");
         categoryItem.setDescription("categoryDescription");
-        this.api.runAdd(categoryItem);
+        api.runAdd(categoryItem);
 
         // Check
         final List<TestCategory> catList = TestCategoryFactory.getAllCategories(getInitiator().getSession());
-        Assert.assertEquals("No categories added", 1, catList.size());
+        final int nbOfCategories = catList.size();
+        String message = "No categories added. " + nbOfCategories + " categories found. Categories are: \n";
+        for (final TestCategory testCategory : catList) {
+            message += " catgeory with id " + testCategory.getId() + ": " + testCategory.getCategory().getName() + "\n";
+        }
+        Assert.assertEquals(message, 1, nbOfCategories);
         final Category resultCategory = catList.get(0).getCategory();
         Assert.assertEquals("Wrong category found (not same name)", categoryItem.getName(), resultCategory.getName());
         Assert.assertEquals("Wrong category found (not same description)", categoryItem.getDescription(), resultCategory.getDescription());
@@ -98,10 +115,10 @@ public class APICategoryIntegrationTest extends AbstractConsoleTest {
         // Update
         final Map<String, String> updates = new HashMap<String, String>();
         updates.put(CategoryItem.ATTRIBUTE_DESCRIPTION, newDescription);
-        this.api.runUpdate(APIID.makeAPIID(category.getCategory().getId()), updates);
+        api.runUpdate(APIID.makeAPIID(category.getCategory().getId()), updates);
 
         // Get
-        final CategoryItem output = this.api.runGet(APIID.makeAPIID(category.getCategory().getId()), new ArrayList<String>(), new ArrayList<String>());
+        final CategoryItem output = api.runGet(APIID.makeAPIID(category.getCategory().getId()), new ArrayList<String>(), new ArrayList<String>());
 
         Assert.assertNotNull("Category not found", output);
         Assert.assertEquals("Update of category failed", newDescription, output.getDescription());
@@ -114,7 +131,7 @@ public class APICategoryIntegrationTest extends AbstractConsoleTest {
         final TestCategory category = TestCategoryFactory.getRandomCategory();
 
         // API Call
-        final CategoryItem catItem = this.api.runGet(APIID.makeAPIID(category.getId()), new ArrayList<String>(), new ArrayList<String>());
+        final CategoryItem catItem = api.runGet(APIID.makeAPIID(category.getId()), new ArrayList<String>(), new ArrayList<String>());
 
         Assert.assertNotNull("Category not found", category);
         Assert.assertEquals("Wrong category description found", category.getCategory().getDescription(), catItem.getDescription());
@@ -125,16 +142,24 @@ public class APICategoryIntegrationTest extends AbstractConsoleTest {
     public void deleteCategoryTest() {
         final TestCategory category = TestCategoryFactory.getRandomCategory();
 
-        this.api.runDelete(Arrays.asList(APIID.makeAPIID(category.getId())));
+        api.runDelete(Arrays.asList(APIID.makeAPIID(category.getId())));
 
         assertNull(getFromEngine(category.getId()));
+
+        TestCategoryFactory.removeTestCategoryFromList(category);
     }
 
     @Test(expected = APIForbiddenException.class)
     public void addingTwiceSameCategoryIsForbidden() throws Exception {
-        CategoryItem categoryItem = aCategoryItem().build();
+        //given
+        final String description = "aDescription";
+        final String name = "aCategory";
+        final CategoryItem categoryItem = aCategoryItem().build();
 
+        //when then exception
         api.runAdd(categoryItem);
         api.runAdd(categoryItem);
+
     }
+
 }

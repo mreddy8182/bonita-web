@@ -30,9 +30,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FileUtils;
-import org.bonitasoft.console.common.server.login.LoginManager;
 import org.bonitasoft.console.common.server.preferences.constants.WebBonitaConstantsUtils;
-import org.bonitasoft.console.common.server.utils.TenantFolder;
+import org.bonitasoft.console.common.server.utils.BonitaHomeFolderAccessor;
+import org.bonitasoft.console.common.server.utils.SessionUtil;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.forms.server.exception.NoCredentialsInSessionException;
 
@@ -139,7 +139,7 @@ public class ApplicationResourceServlet extends HttpServlet {
                 } else {
                     final File file = new File(processDir, lastDeployementDate + File.separator + WEB_RESOURCES_DIR + File.separator + resourcePath);
 
-                    final TenantFolder tenantFolder = new TenantFolder();
+                    final BonitaHomeFolderAccessor tenantFolder = new BonitaHomeFolderAccessor();
                     if (!tenantFolder.isInFolder(file, processDir)) {
                         throw new ServletException("For security reasons, access to this file paths" + file.getAbsolutePath() + " is restricted.");
                     }
@@ -203,7 +203,7 @@ public class ApplicationResourceServlet extends HttpServlet {
      */
     protected long getTenantID(final HttpServletRequest request) throws NoCredentialsInSessionException {
         final HttpSession httpSession = request.getSession();
-        final APISession aAPISession = (APISession) httpSession.getAttribute(LoginManager.API_SESSION_PARAM_KEY);
+        final APISession aAPISession = (APISession) httpSession.getAttribute(SessionUtil.API_SESSION_PARAM_KEY);
         return aAPISession.getTenantId();
     }
 
