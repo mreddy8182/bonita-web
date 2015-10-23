@@ -42,18 +42,22 @@ public class I18nTanslationResource extends CommonResource {
     public List<Translation> getI18nTanslation() throws CommandNotFoundException, CommandExecutionException, CommandParameterizationException {
         List<Translation> items = new ArrayList<>();
 
-        String local = getSearchFilters()!=null? getSearchFilters().get("locale"):null;
-        if (local == null) {
+        String locale = getLocale();
+        if (locale == null) {
             getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Request should contains 'locale' parameter.");
             return null;
         }
-        Map<String, String> translations = i18n.getLocale(AbstractI18n.stringToLocale(local));
+        Map<String, String> translations = i18n.getLocale(AbstractI18n.stringToLocale(locale));
 
         for (final Map.Entry<String, String> entry : translations.entrySet()) {
             items.add(new Translation(entry.getKey(), entry.getValue()));
         }
 
         return items;
+    }
+
+    private String getLocale() {
+        return getSearchFilters() != null ? getSearchFilters().get("locale") : null;
     }
 
 }
