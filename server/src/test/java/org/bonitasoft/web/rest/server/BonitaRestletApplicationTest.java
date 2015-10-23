@@ -52,7 +52,7 @@ public class BonitaRestletApplicationTest {
 
 
     @Test
-    public void should_application_register_i18n_resources() throws Exception {
+    public void application_should_register_i18n_resources() throws Exception {
         //given
         final BonitaRestletApplication bonitaRestletApplication = new BonitaRestletApplication(finderFactory, bonitaJacksonConverter);
 
