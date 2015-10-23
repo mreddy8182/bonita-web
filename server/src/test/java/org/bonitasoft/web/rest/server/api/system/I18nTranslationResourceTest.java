@@ -59,7 +59,7 @@ public class I18nTranslationResourceTest extends RestletTest {
 
         when(i18n.getLocale(AbstractI18n.LOCALE.fr)).thenReturn(parameters);
 
-        Response response = request("/system/i18ntranslationv2?f=locale%3Dfr").get();
+        Response response = request("/system/i18ntranslation?f=locale%3Dfr").get();
 
         assertThat(response).hasStatus(Status.SUCCESS_OK);
 
@@ -75,7 +75,7 @@ public class I18nTranslationResourceTest extends RestletTest {
     @Test
     public void should_return_http400_error_code_when_no_queryString() throws Exception {
 
-        Response response = request("/system/i18ntranslationv2").get();
+        Response response = request("/system/i18ntranslation").get();
 
         assertThat(response).hasStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 
@@ -84,7 +84,7 @@ public class I18nTranslationResourceTest extends RestletTest {
     @Test
     public void should_return_http400_error_code_when_no_locale_param() throws Exception {
 
-        Response response = request("/system/i18ntranslationv2?f=test").get();
+        Response response = request("/system/i18ntranslation?f=test").get();
 
         assertThat(response).hasStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 
