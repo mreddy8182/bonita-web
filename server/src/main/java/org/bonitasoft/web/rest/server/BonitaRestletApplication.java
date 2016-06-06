@@ -13,7 +13,10 @@
  ******************************************************************************/
 package org.bonitasoft.web.rest.server;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Level;
 
 import org.bonitasoft.web.rest.server.api.bdm.BusinessDataFindByIdsResource;
@@ -41,12 +44,14 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.CharacterSet;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
+import org.restlet.util.Series;
 
 /**
  * @author Matthieu Chaffotte
@@ -80,7 +85,7 @@ public class BonitaRestletApplication extends Application {
     private final FinderFactory factory;
 
 
-    public BonitaRestletApplication(final FinderFactory finderFactory,ConverterHelper converterHelper ) {
+    public BonitaRestletApplication(final FinderFactory finderFactory,final ConverterHelper converterHelper ) {
         super();
         factory = finderFactory;
         getMetadataService().setDefaultMediaType(MediaType.APPLICATION_JSON);
@@ -88,10 +93,10 @@ public class BonitaRestletApplication extends Application {
         replaceJacksonConverter(converterHelper);
     }
 
-    private void replaceJacksonConverter(ConverterHelper converterHelper) {
+    private void replaceJacksonConverter(final ConverterHelper converterHelper) {
         final List<ConverterHelper> registeredConverters = Engine.getInstance().getRegisteredConverters();
         registeredConverters.add(converterHelper);
-        for (ConverterHelper registeredConverter : registeredConverters) {
+        for (final ConverterHelper registeredConverter : registeredConverters) {
             if (registeredConverter.getClass().equals(JacksonConverter.class)){
                 registeredConverters.remove(registeredConverter);
                 registeredConverters.add(converterHelper);
@@ -176,6 +181,20 @@ public class BonitaRestletApplication extends Application {
         request.setLoggable(false);
         Engine.setLogLevel(Level.OFF);
         Engine.setRestletLogLevel(Level.OFF);
+
+        Series<Header> headers = (Series<Header>) response.getAttributes().get("org.restlet.http.headers");
+        if (headers == null) {
+            headers = new Series(Header.class);
+            response.getAttributes().put("org.restlet.http.headers", headers);
+        }
+        headers.add("Pragma", "No-cache");
+        headers.add("Cache-Control", "no-cache,no-store,no-transform,max-age=0");
+        final Date expdate = new Date();
+        expdate.setTime(expdate.getTime() - 3600000 * 24);
+        final SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy kk:mm:ss z");
+        df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        headers.add("Expires", df.format(expdate));
+
         super.handle(request, response);
     }
 }
